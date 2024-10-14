@@ -85,7 +85,7 @@ namespace Meilisearch.Tests
 
         [Theory]
         [MemberData(nameof(PossibleSearchRules))]
-        public async void SearchesSuccessfullyWithTheNewToken(object data)
+        public async Task SearchesSuccessfullyWithTheNewToken(object data)
         {
             var keyOptions = new Key
             {
@@ -148,7 +148,7 @@ namespace Meilisearch.Tests
         }
 
         [Fact]
-        public async void SearchSucceedsWhenTokenIsNotExpired()
+        public async Task SearchSucceedsWhenTokenIsNotExpired()
         {
             var keyOptions = new Key
             {
