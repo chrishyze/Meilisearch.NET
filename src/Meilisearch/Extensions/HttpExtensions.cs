@@ -105,11 +105,5 @@ namespace Meilisearch.Extensions
             var request = new HttpRequestMessage(method, requestUri) { Content = content };
             return client.SendAsync(request, cancellationToken);
         }
-
-        internal static Task<HttpResponseMessage> PatchAsJsonAsync<TValue>(this HttpClient client, string requestUri, TValue value, JsonSerializerOptions options = null, CancellationToken cancellationToken = default)
-        {
-            var content = JsonContent.Create(value, mediaType: null, options);
-            return client.PatchAsync(requestUri, content, cancellationToken);
-        }
     }
 }
