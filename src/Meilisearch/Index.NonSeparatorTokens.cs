@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,11 +11,15 @@ namespace Meilisearch
         /// <summary>
         /// Gets all the non separator tokens settings.
         /// </summary>
+        /// <param name="options">The JSON serialization options.</param>
         /// <param name="cancellationToken">The cancellation token for this call.</param>
         /// <returns>Returns all the configured non separator tokens.</returns>
-        public async Task<List<string>> GetNonSeparatorTokensAsync(CancellationToken cancellationToken = default)
+        public async Task<List<string>> GetNonSeparatorTokensAsync(JsonSerializerOptions options = null,
+            CancellationToken cancellationToken = default)
         {
-            return await _http.GetFromJsonAsync<List<string>>($"indexes/{Uid}/settings/non-separator-tokens", cancellationToken: cancellationToken)
+            options ??= Constants.JsonSerializerOptionsRemoveNulls;
+            return await _http.GetFromJsonAsync<List<string>>($"indexes/{Uid}/settings/non-separator-tokens",
+                    options: options, cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
         }
 
@@ -22,26 +27,38 @@ namespace Meilisearch
         /// Updates all the non separator tokens settings.
         /// </summary>
         /// <param name="nonSeparatorTokens">Collection of separator tokens.</param>
+        /// <param name="options">The JSON serialization options.</param>
         /// <param name="cancellationToken">The cancellation token for this call.</param>
         /// <returns>Returns the task info of the asynchronous task.</returns>
-        public async Task<TaskInfo> UpdateNonSeparatorTokensAsync(IEnumerable<string> nonSeparatorTokens, CancellationToken cancellationToken = default)
+        public async Task<TaskInfo> UpdateNonSeparatorTokensAsync(IEnumerable<string> nonSeparatorTokens,
+            JsonSerializerOptions options = null, CancellationToken cancellationToken = default)
         {
+            options ??= Constants.JsonSerializerOptionsRemoveNulls;
             var responseMessage =
-                await _http.PutAsJsonAsync($"indexes/{Uid}/settings/non-separator-tokens", nonSeparatorTokens, Constants.JsonSerializerOptionsRemoveNulls, cancellationToken: cancellationToken)
+                await _http.PutAsJsonAsync($"indexes/{Uid}/settings/non-separator-tokens", nonSeparatorTokens,
+                        options: options, cancellationToken: cancellationToken)
                     .ConfigureAwait(false);
-            return await responseMessage.Content.ReadFromJsonAsync<TaskInfo>(cancellationToken: cancellationToken).ConfigureAwait(false);
+            return await responseMessage.Content
+                .ReadFromJsonAsync<TaskInfo>(options: options, cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
         }
 
         /// <summary>
         /// Resets all the non separator tokens settings.
         /// </summary>
+        /// <param name="options">The JSON serialization options.</param>
         /// <param name="cancellationToken">The cancellation token for this call.</param>
         /// <returns>Returns the task info of the asynchronous task.</returns>
-        public async Task<TaskInfo> ResetNonSeparatorTokensAsync(CancellationToken cancellationToken = default)
+        public async Task<TaskInfo> ResetNonSeparatorTokensAsync(JsonSerializerOptions options = null,
+            CancellationToken cancellationToken = default)
         {
-            var httpresponse = await _http.DeleteAsync($"indexes/{Uid}/settings/non-separator-tokens", cancellationToken)
+            options ??= Constants.JsonSerializerOptionsRemoveNulls;
+            var httpresponse = await _http
+                .DeleteAsync($"indexes/{Uid}/settings/non-separator-tokens", cancellationToken)
                 .ConfigureAwait(false);
-            return await httpresponse.Content.ReadFromJsonAsync<TaskInfo>(cancellationToken: cancellationToken).ConfigureAwait(false);
+            return await httpresponse.Content
+                .ReadFromJsonAsync<TaskInfo>(options: options, cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
         }
     }
 }

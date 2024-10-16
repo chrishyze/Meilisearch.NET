@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -63,11 +64,11 @@ namespace Meilisearch.Tests
             };
         }
 
-        private delegate Task<TValue> IndexGetMethod<TValue>(CancellationToken cancellationToken = default);
+        private delegate Task<TValue> IndexGetMethod<TValue>(JsonSerializerOptions options = null, CancellationToken cancellationToken = default);
 
-        private delegate Task<TaskInfo> IndexUpdateMethod<TValue>(TValue newValue, CancellationToken cancellationToken = default);
+        private delegate Task<TaskInfo> IndexUpdateMethod<TValue>(TValue newValue, JsonSerializerOptions options = null, CancellationToken cancellationToken = default);
 
-        private delegate Task<TaskInfo> IndexResetMethod(CancellationToken cancellationToken = default);
+        private delegate Task<TaskInfo> IndexResetMethod(JsonSerializerOptions options = null, CancellationToken cancellationToken = default);
 
         public async Task InitializeAsync()
         {

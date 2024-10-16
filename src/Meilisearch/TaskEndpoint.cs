@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,7 +11,6 @@ using Meilisearch.QueryParameters;
 
 namespace Meilisearch
 {
-
     /// <summary>
     /// Meilisearch index to search and manage documents.
     /// </summary>
@@ -22,12 +22,16 @@ namespace Meilisearch
         /// Gets the tasks.
         /// </summary>
         /// <param name="query">Query parameters supports by the method.</param>
+        /// <param name="options">The JSON serialization options.</param>
         /// <param name="cancellationToken">The cancellation token for this call.</param>
         /// <returns>Returns a list of the tasks.</returns>
-        public async Task<TasksResults<IEnumerable<TaskResource>>> GetTasksAsync(TasksQuery query = default, CancellationToken cancellationToken = default)
+        public async Task<TasksResults<IEnumerable<TaskResource>>> GetTasksAsync(TasksQuery query = default,
+            JsonSerializerOptions options = null, CancellationToken cancellationToken = default)
         {
+            options ??= Constants.JsonSerializerOptionsRemoveNulls;
             var uri = query.ToQueryString(uri: "tasks");
-            return await _http.GetFromJsonAsync<TasksResults<IEnumerable<TaskResource>>>(uri, cancellationToken: cancellationToken)
+            return await _http.GetFromJsonAsync<TasksResults<IEnumerable<TaskResource>>>(uri,
+                    options: options, cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
         }
 
@@ -35,41 +39,55 @@ namespace Meilisearch
         /// Cancel tasks given a specific query.
         /// </summary>
         /// <param name="query">Query parameters supports by the method.</param>
+        /// <param name="options">The JSON serialization options.</param>
         /// <param name="cancellationToken">The cancellation token for this call.</param>
         /// <returns>Returns a list of the tasks.</returns>
-        public async Task<TaskInfo> CancelTasksAsync(CancelTasksQuery query, CancellationToken cancellationToken = default)
+        public async Task<TaskInfo> CancelTasksAsync(CancelTasksQuery query,
+            JsonSerializerOptions options = null, CancellationToken cancellationToken = default)
         {
+            options ??= Constants.JsonSerializerOptionsRemoveNulls;
             var uri = query.ToQueryString(uri: "tasks/cancel");
 
             var response = await _http.PostAsync(uri, null, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-            return await response.Content.ReadFromJsonAsync<TaskInfo>(cancellationToken: cancellationToken).ConfigureAwait(false);
+            return await response.Content
+                .ReadFromJsonAsync<TaskInfo>(options: options, cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
         }
 
         /// <summary>
         /// Delete tasks given a specific query.
         /// </summary>
         /// <param name="query">Query parameters supports by the method.</param>
+        /// <param name="options">The JSON serialization options.</param>
         /// <param name="cancellationToken">The cancellation token for this call.</param>
         /// <returns>Returns a list of the tasks.</returns>
-        public async Task<TaskInfo> DeleteTasksAsync(DeleteTasksQuery query, CancellationToken cancellationToken = default)
+        public async Task<TaskInfo> DeleteTasksAsync(DeleteTasksQuery query,
+            JsonSerializerOptions options = null, CancellationToken cancellationToken = default)
         {
+            options ??= Constants.JsonSerializerOptionsRemoveNulls;
             var uri = query.ToQueryString(uri: "tasks");
 
             var response = await _http.DeleteAsync(uri, cancellationToken).ConfigureAwait(false);
 
-            return await response.Content.ReadFromJsonAsync<TaskInfo>(cancellationToken: cancellationToken).ConfigureAwait(false);
+            return await response.Content.ReadFromJsonAsync<TaskInfo>(
+                    options: options, cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
         }
 
         /// <summary>
         /// Gets one task.
         /// </summary>
         /// <param name="taskUid">Uid of the index.</param>
+        /// <param name="options">The JSON serialization options.</param>
         /// <param name="cancellationToken">The cancellation token for this call.</param>
         /// <returns>Returns the task.</returns>
-        public async Task<TaskResource> GetTaskAsync(int taskUid, CancellationToken cancellationToken = default)
+        public async Task<TaskResource> GetTaskAsync(int taskUid,
+            JsonSerializerOptions options = null, CancellationToken cancellationToken = default)
         {
-            return await _http.GetFromJsonAsync<TaskResource>($"tasks/{taskUid}", cancellationToken: cancellationToken)
+            options ??= Constants.JsonSerializerOptionsRemoveNulls;
+            return await _http.GetFromJsonAsync<TaskResource>($"tasks/{taskUid}", options: options,
+                    cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
         }
 
@@ -77,11 +95,15 @@ namespace Meilisearch
         /// Gets the tasks from an index.
         /// </summary>
         /// <param name="indexUid">Uid of the index.</param>
+        /// <param name="options">The JSON serialization options.</param>
         /// <param name="cancellationToken">The cancellation token for this call.</param>
         /// <returns>Returns a list of tasks of an index.</returns>
-        public async Task<TasksResults<IEnumerable<TaskResource>>> GetIndexTasksAsync(string indexUid, CancellationToken cancellationToken = default)
+        public async Task<TasksResults<IEnumerable<TaskResource>>> GetIndexTasksAsync(string indexUid,
+            JsonSerializerOptions options = null, CancellationToken cancellationToken = default)
         {
-            return await _http.GetFromJsonAsync<TasksResults<IEnumerable<TaskResource>>>($"tasks?indexUid={indexUid}", cancellationToken: cancellationToken)
+            options ??= Constants.JsonSerializerOptionsRemoveNulls;
+            return await _http.GetFromJsonAsync<TasksResults<IEnumerable<TaskResource>>>($"tasks?indexUid={indexUid}",
+                    options: options, cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
         }
 
@@ -91,19 +113,22 @@ namespace Meilisearch
         /// <param name="taskUid">Unique identifier of the asynchronous task.</param>
         /// <param name="timeoutMs">Timeout in millisecond.</param>
         /// <param name="intervalMs">Interval in millisecond between each check.</param>
+        /// <param name="options">The JSON serialization options.</param>
         /// <param name="cancellationToken">The cancellation token for this call.</param>
         /// <returns>Returns the task info of finished task.</returns>
         public async Task<TaskResource> WaitForTaskAsync(
             int taskUid,
             double timeoutMs = 5000.0,
             int intervalMs = 50,
+            JsonSerializerOptions options = null,
             CancellationToken cancellationToken = default)
         {
+            options ??= Constants.JsonSerializerOptionsRemoveNulls;
             var endingTime = DateTime.Now.AddMilliseconds(timeoutMs);
 
             while (DateTime.Now < endingTime)
             {
-                var task = await GetTaskAsync(taskUid, cancellationToken).ConfigureAwait(false);
+                var task = await GetTaskAsync(taskUid, options, cancellationToken).ConfigureAwait(false);
 
                 if (task.Status != TaskInfoStatus.Enqueued && task.Status != TaskInfoStatus.Processing)
                 {

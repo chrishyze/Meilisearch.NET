@@ -1,13 +1,14 @@
 using System;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Meilisearch.Extensions;
+
 namespace Meilisearch
 {
-
     /// <summary>
     /// Meilisearch index to search and manage documents.
     /// </summary>
@@ -24,7 +25,8 @@ namespace Meilisearch
         /// <param name="primaryKey">Documents primary key.</param>
         /// <param name="createdAt">The creation date of the index.</param>
         /// <param name="updatedAt">The latest update of the index.</param>
-        public Index(string uid, string primaryKey = default, DateTimeOffset? createdAt = default, DateTimeOffset? updatedAt = default)
+        public Index(string uid, string primaryKey = default, DateTimeOffset? createdAt = default,
+            DateTimeOffset? updatedAt = default)
         {
             Uid = uid;
             PrimaryKey = primaryKey;
@@ -60,7 +62,8 @@ namespace Meilisearch
         /// <param name="uid">Uid of the index to retrieve.</param>
         /// <param name="cancellationToken">The cancellation token for this call.</param>
         /// <returns>Call response.</returns>
-        public static async Task<HttpResponseMessage> GetRawAsync(HttpClient http, string uid, CancellationToken cancellationToken = default)
+        public static async Task<HttpResponseMessage> GetRawAsync(HttpClient http, string uid,
+            CancellationToken cancellationToken = default)
         {
             return await http.GetAsync($"indexes/{uid}", cancellationToken).ConfigureAwait(false);
         }
@@ -68,12 +71,16 @@ namespace Meilisearch
         /// <summary>
         /// Fetch the info of the index.
         /// </summary>
+        /// <param name="options">The JSON serialization options.</param>
         /// <param name="cancellationToken">The cancellation token for this call.</param>
         /// <returns>An instance of the index fetch.</returns>
-        public async Task<Index> FetchInfoAsync(CancellationToken cancellationToken = default)
+        public async Task<Index> FetchInfoAsync(JsonSerializerOptions options = null,
+            CancellationToken cancellationToken = default)
         {
+            options ??= Constants.JsonSerializerOptionsRemoveNulls;
             var response = await GetRawAsync(_http, Uid, cancellationToken).ConfigureAwait(false);
-            var content = await response.Content.ReadFromJsonAsync<Index>(cancellationToken: cancellationToken).ConfigureAwait(false);
+            var content = await response.Content
+                .ReadFromJsonAsync<Index>(options: options, cancellationToken: cancellationToken).ConfigureAwait(false);
             PrimaryKey = content.PrimaryKey;
             CreatedAt = content.CreatedAt;
             UpdatedAt = content.UpdatedAt;
@@ -83,49 +90,68 @@ namespace Meilisearch
         /// <summary>
         /// Fetch the primary key of the index.
         /// </summary>
+        /// <param name="options">The JSON serialization options.</param>
         /// <param name="cancellationToken">The cancellation token for this call.</param>
         /// <returns>Primary key of the fetched index.</returns>
-        public async Task<string> FetchPrimaryKey(CancellationToken cancellationToken = default)
+        public async Task<string> FetchPrimaryKey(JsonSerializerOptions options = null,
+            CancellationToken cancellationToken = default)
         {
-            return (await FetchInfoAsync(cancellationToken).ConfigureAwait(false)).PrimaryKey;
+            options ??= Constants.JsonSerializerOptionsRemoveNulls;
+            return (await FetchInfoAsync(options, cancellationToken).ConfigureAwait(false)).PrimaryKey;
         }
 
         /// <summary>
         /// Changes the primary key of the index.
         /// </summary>
         /// <param name="primarykeytoChange">Primary key set.</param>
+        /// <param name="options">The JSON serialization options.</param>
         /// <param name="cancellationToken">The cancellation token for this call.</param>
         /// <returns>Index with the updated Primary Key.</returns>
-        public async Task<TaskInfo> UpdateAsync(string primarykeytoChange, CancellationToken cancellationToken = default)
+        public async Task<TaskInfo> UpdateAsync(string primarykeytoChange,
+            JsonSerializerOptions options = null, CancellationToken cancellationToken = default)
         {
+            options ??= Constants.JsonSerializerOptionsRemoveNulls;
             var responseMessage =
-                await _http.PatchAsJsonAsync($"indexes/{Uid}", new { primaryKey = primarykeytoChange }, cancellationToken: cancellationToken)
+                await _http.PatchAsJsonAsync($"indexes/{Uid}", new { primaryKey = primarykeytoChange },
+                        options: options, cancellationToken: cancellationToken)
                     .ConfigureAwait(false);
 
-            return await responseMessage.Content.ReadFromJsonAsync<TaskInfo>(cancellationToken: cancellationToken).ConfigureAwait(false);
+            return await responseMessage.Content
+                .ReadFromJsonAsync<TaskInfo>(options: options, cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
         }
 
         /// <summary>
         /// Deletes the index.
         /// It's not a recovery delete. You will also lose the documents within the index.
         /// </summary>
+        /// <param name="options">The JSON serialization options.</param>
         /// <param name="cancellationToken">The cancellation token for this call.</param>
         /// <returns>Returns the task info.</returns>
-        public async Task<TaskInfo> DeleteAsync(CancellationToken cancellationToken = default)
+        public async Task<TaskInfo> DeleteAsync(JsonSerializerOptions options = null,
+            CancellationToken cancellationToken = default)
         {
+            options ??= Constants.JsonSerializerOptionsRemoveNulls;
             var responseMessage = await _http.DeleteAsync($"indexes/{Uid}", cancellationToken).ConfigureAwait(false);
 
-            return await responseMessage.Content.ReadFromJsonAsync<TaskInfo>(cancellationToken: cancellationToken).ConfigureAwait(false);
+            return await responseMessage.Content
+                .ReadFromJsonAsync<TaskInfo>(options: options, cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
         }
 
         /// <summary>
         /// Get stats.
         /// </summary>
+        /// <param name="options">The JSON serialization options.</param>
         /// <param name="cancellationToken">The cancellation token for this call.</param>
         /// <returns>Return index stats.</returns>
-        public async Task<IndexStats> GetStatsAsync(CancellationToken cancellationToken = default)
+        public async Task<IndexStats> GetStatsAsync(JsonSerializerOptions options = null,
+            CancellationToken cancellationToken = default)
         {
-            return await _http.GetFromJsonAsync<IndexStats>($"indexes/{Uid}/stats", cancellationToken: cancellationToken)
+            options ??= Constants.JsonSerializerOptionsRemoveNulls;
+            return await _http
+                .GetFromJsonAsync<IndexStats>($"indexes/{Uid}/stats", options: options,
+                    cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
         }
 
