@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 
 using Meilisearch.Converters;
+using Meilisearch.Errors;
 using Meilisearch.Extensions;
 using Meilisearch.QueryParameters;
 

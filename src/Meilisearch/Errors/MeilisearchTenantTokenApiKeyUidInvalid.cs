@@ -1,6 +1,6 @@
 using System;
 
-namespace Meilisearch
+namespace Meilisearch.Errors
 {
     /// <summary>
     /// Represents an exception thrown when `apiKey` is not present

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using FluentAssertions;
 
+using Meilisearch.Errors;
 using Meilisearch.QueryParameters;
 
 using Xunit;

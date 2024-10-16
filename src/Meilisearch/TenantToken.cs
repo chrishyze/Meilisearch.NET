@@ -4,6 +4,8 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 
+using Meilisearch.Errors;
+
 using Microsoft.IdentityModel.Tokens;
 
 namespace Meilisearch

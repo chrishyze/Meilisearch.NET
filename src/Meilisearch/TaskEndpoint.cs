@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Meilisearch.Errors;
 using Meilisearch.Extensions;
 using Meilisearch.QueryParameters;
 

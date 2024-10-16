@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Meilisearch
+namespace Meilisearch.Errors
 {
     /// <summary>
     /// Error sent by Meilisearch API.

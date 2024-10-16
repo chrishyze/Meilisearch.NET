@@ -1,6 +1,6 @@
 using System;
 
-namespace Meilisearch
+namespace Meilisearch.Errors
 {
     /// <summary>
     /// Represents an exception thrown when the provided expiration date is invalid or in the past.

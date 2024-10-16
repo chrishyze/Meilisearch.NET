@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Meilisearch.Errors;
+
 using Xunit;
 
 namespace Meilisearch.Tests

@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Meilisearch
+namespace Meilisearch.Client
 {
     /// <summary>
     /// Deserialized response of the Meilisearch health.

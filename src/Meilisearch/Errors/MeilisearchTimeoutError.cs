@@ -1,6 +1,6 @@
 using System;
 
-namespace Meilisearch
+namespace Meilisearch.Errors
 {
     /// <summary>
     /// Error sent when request not processed in expected time.
