@@ -1,17 +1,16 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Meilisearch
+namespace Meilisearch;
+
+/// <summary>
+/// Search query used in multi-index search
+/// </summary>
+public class MultiSearchQuery
 {
     /// <summary>
-    /// Search query used in multi-index search
+    /// The queries
     /// </summary>
-    public class MultiSearchQuery
-    {
-        /// <summary>
-        /// The queries
-        /// </summary>
-        [JsonPropertyName("queries")]
-        public List<SearchQuery> Queries { get; set; }
-    }
+    [JsonPropertyName("queries")]
+    public List<SearchQuery> Queries { get; set; }
 }

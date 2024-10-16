@@ -1,18 +1,17 @@
 using System;
 
-namespace Meilisearch.Errors
+namespace Meilisearch.Errors;
+
+/// <summary>
+/// Represents an exception thrown when the provided expiration date is invalid or in the past.
+/// </summary>
+public class MeilisearchTenantTokenExpired : Exception
 {
     /// <summary>
-    /// Represents an exception thrown when the provided expiration date is invalid or in the past.
+    /// Initializes a new instance of the <see cref="MeilisearchTenantTokenExpired"/> class.
     /// </summary>
-    public class MeilisearchTenantTokenExpired : Exception
+    public MeilisearchTenantTokenExpired()
+        : base("Provide a valid UTC DateTime in the future.")
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MeilisearchTenantTokenExpired"/> class.
-        /// </summary>
-        public MeilisearchTenantTokenExpired()
-            : base("Provide a valid UTC DateTime in the future.")
-        {
-        }
     }
 }

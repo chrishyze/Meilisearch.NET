@@ -1,10 +1,9 @@
 using System.Text.Json.Serialization;
 
-namespace Meilisearch.QueryParameters
+namespace Meilisearch.QueryParameters;
+
+public class DeleteDocumentsQuery
 {
-    public class DeleteDocumentsQuery
-    {
-        [JsonPropertyName("filter")]
-        public object Filter { get; set; }
-    }
+    [JsonPropertyName("filter")]
+    public object Filter { get; set; }
 }

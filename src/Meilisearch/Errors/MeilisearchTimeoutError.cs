@@ -1,20 +1,19 @@
 using System;
 
-namespace Meilisearch.Errors
+namespace Meilisearch.Errors;
+
+/// <summary>
+/// Error sent when request not processed in expected time.
+/// </summary>
+public class MeilisearchTimeoutError : Exception
 {
     /// <summary>
-    /// Error sent when request not processed in expected time.
+    /// Initializes a new instance of the <see cref="MeilisearchTimeoutError"/> class.
+    /// Handler Exception for MeilisearchTimeoutError with message.
     /// </summary>
-    public class MeilisearchTimeoutError : Exception
+    /// <param name="message">Custom error message.</param>
+    public MeilisearchTimeoutError(string message)
+        : base(message)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MeilisearchTimeoutError"/> class.
-        /// Handler Exception for MeilisearchTimeoutError with message.
-        /// </summary>
-        /// <param name="message">Custom error message.</param>
-        public MeilisearchTimeoutError(string message)
-            : base(message)
-        {
-        }
     }
 }

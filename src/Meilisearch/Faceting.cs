@@ -1,13 +1,12 @@
 using System.Text.Json.Serialization;
 
-namespace Meilisearch
+namespace Meilisearch;
+
+/// <summary>
+/// Faceting configuration.
+/// </summary>
+public class Faceting
 {
-    /// <summary>
-    /// Faceting configuration.
-    /// </summary>
-    public class Faceting
-    {
-        [JsonPropertyName("maxValuesPerFacet")]
-        public int MaxValuesPerFacet { get; set; }
-    }
+    [JsonPropertyName("maxValuesPerFacet")]
+    public int MaxValuesPerFacet { get; set; }
 }

@@ -1,19 +1,18 @@
 using System;
 
-namespace Meilisearch.Errors
+namespace Meilisearch.Errors;
+
+/// <summary>
+/// Represents an exception thrown when `apiKey` is not present
+/// to sign correctly the Tenant Token generation.
+/// </summary>
+public class MeilisearchTenantTokenApiKeyUidInvalid : Exception
 {
     /// <summary>
-    /// Represents an exception thrown when `apiKey` is not present
-    /// to sign correctly the Tenant Token generation.
+    /// Initializes a new instance of the <see cref="MeilisearchTenantTokenApiKeyUidInvalid"/> class.
     /// </summary>
-    public class MeilisearchTenantTokenApiKeyUidInvalid : Exception
+    public MeilisearchTenantTokenApiKeyUidInvalid()
+        : base("Cannot generate a signed token without a valid apiKeyUid. Provide one in the method params.")
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MeilisearchTenantTokenApiKeyUidInvalid"/> class.
-        /// </summary>
-        public MeilisearchTenantTokenApiKeyUidInvalid()
-            : base("Cannot generate a signed token without a valid apiKeyUid. Provide one in the method params.")
-        {
-        }
     }
 }

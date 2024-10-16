@@ -1,30 +1,25 @@
-using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-
-using Microsoft.AspNetCore.WebUtilities;
 
 using Xunit;
 
-namespace Meilisearch.Tests
+namespace Meilisearch.Tests;
+
+public class IndexSwapTests
 {
-    public class IndexSwapTests
+    [Fact]
+    public void PreventMoreThanTwoIndexesPerObject()
     {
-        [Fact]
-        public void PreventMoreThanTwoIndexesPerObject()
-        {
-            var swap = new IndexSwap("indexA", "indexB");
+        var swap = new IndexSwap("indexA", "indexB");
 
-            Assert.Equal(new List<string> { "indexA", "indexB" }, swap.Indexes);
-        }
+        Assert.Equal(new List<string> { "indexA", "indexB" }, swap.Indexes);
+    }
 
-        [Fact]
-        public void CreateExpectedJSONFormat()
-        {
-            var swap = new IndexSwap("indexA", "indexB");
+    [Fact]
+    public void CreateExpectedJSONFormat()
+    {
+        var swap = new IndexSwap("indexA", "indexB");
 
-            Assert.Equal("{\"indexes\":[\"indexA\",\"indexB\"]}", JsonSerializer.Serialize(swap));
-        }
+        Assert.Equal("{\"indexes\":[\"indexA\",\"indexB\"]}", JsonSerializer.Serialize(swap));
     }
 }

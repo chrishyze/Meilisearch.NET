@@ -1,26 +1,25 @@
-namespace Meilisearch
+namespace Meilisearch;
+
+/// <summary>
+/// Information regarding an API key for the Meilisearch server.
+/// </summary>
+public class Version
 {
     /// <summary>
-    /// Information regarding an API key for the Meilisearch server.
+    /// Extracts version from Meilisearch.csproj.
     /// </summary>
-    public class Version
+    /// <returns>Returns a formatted version.</returns>
+    public string GetQualifiedVersion()
     {
-        /// <summary>
-        /// Extracts version from Meilisearch.csproj.
-        /// </summary>
-        /// <returns>Returns a formatted version.</returns>
-        public string GetQualifiedVersion()
-        {
-            return $"Meilisearch .NET (v{GetVersion()})";
-        }
+        return $"Meilisearch .NET (v{GetVersion()})";
+    }
 
-        /// <summary>
-        /// Extracts the "major.minor.build" version from Meilisearch.csproj.
-        /// </summary>
-        /// <returns>Returns a version from the GetType as String.</returns>
-        public string GetVersion()
-        {
-            return GetType().Assembly.GetName().Version.ToString(3);
-        }
+    /// <summary>
+    /// Extracts the "major.minor.build" version from Meilisearch.csproj.
+    /// </summary>
+    /// <returns>Returns a version from the GetType as String.</returns>
+    public string GetVersion()
+    {
+        return GetType().Assembly.GetName().Version.ToString(3);
     }
 }

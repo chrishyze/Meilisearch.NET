@@ -6,53 +6,52 @@ using Meilisearch.Extensions;
 
 using Xunit;
 
-namespace Meilisearch.Tests
+namespace Meilisearch.Tests;
+
+public class VersionTests
 {
-    public class VersionTests
+    private readonly Version _version;
+
+    public VersionTests()
     {
-        private readonly Version _version;
+        _version = new Version();
+    }
 
-        public VersionTests()
-        {
-            _version = new Version();
-        }
+    [Fact]
+    public void GetQualifiedVersion()
+    {
+        var qualifiedVersion = _version.GetQualifiedVersion();
+        var version = _version.GetVersion();
 
-        [Fact]
-        public void GetQualifiedVersion()
-        {
-            var qualifiedVersion = _version.GetQualifiedVersion();
-            var version = _version.GetVersion();
+        Assert.Equal(qualifiedVersion, $"Meilisearch .NET (v{version})");
+    }
 
-            Assert.Equal(qualifiedVersion, $"Meilisearch .NET (v{version})");
-        }
+    [Fact]
+    public void GetSimpleVersionFromCsprojFile()
+    {
+        // get the current version defined in the csproj file
+        var xmldoc = new XmlDocument();
+        var currentDir = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
+        var path = Path.Combine(currentDir, @"../../../../src/Meilisearch/Meilisearch.csproj");
+        xmldoc.Load(path);
+        var mgr = new XmlNamespaceManager(xmldoc.NameTable);
+        mgr.AddNamespace("x", "http://schemas.microsoft.com/developer/msbuild/2003");
+        var versionFromCsproj = xmldoc.FirstChild.FirstChild.SelectSingleNode("Version").InnerText;
 
-        [Fact]
-        public void GetSimpleVersionFromCsprojFile()
-        {
-            // get the current version defined in the csproj file
-            var xmldoc = new XmlDocument();
-            var currentDir = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
-            var path = Path.Combine(currentDir, @"../../../../src/Meilisearch/Meilisearch.csproj");
-            xmldoc.Load(path);
-            var mgr = new XmlNamespaceManager(xmldoc.NameTable);
-            mgr.AddNamespace("x", "http://schemas.microsoft.com/developer/msbuild/2003");
-            var versionFromCsproj = xmldoc.FirstChild.FirstChild.SelectSingleNode("Version").InnerText;
+        var value = _version.GetVersion();
 
-            var value = _version.GetVersion();
+        Assert.NotNull(value);
+        Assert.Equal(versionFromCsproj, value);
+    }
 
-            Assert.NotNull(value);
-            Assert.Equal(versionFromCsproj, value);
-        }
+    [Fact]
+    public void GetDefaultUserAgentHeader()
+    {
+        var httpClient = new HttpClient();
+        httpClient.AddDefaultUserAgent();
+        var userAgent = string.Join(' ', httpClient.DefaultRequestHeaders.GetValues("User-Agent"));
+        var version = new Version();
 
-        [Fact]
-        public void GetDefaultUserAgentHeader()
-        {
-            var httpClient = new HttpClient();
-            httpClient.AddDefaultUserAgent();
-            var userAgent = string.Join(' ', httpClient.DefaultRequestHeaders.GetValues("User-Agent"));
-            var version = new Version();
-
-            Assert.Equal(version.GetQualifiedVersion(), userAgent);
-        }
+        Assert.Equal(version.GetQualifiedVersion(), userAgent);
     }
 }

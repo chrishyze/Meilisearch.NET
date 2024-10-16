@@ -1,72 +1,71 @@
 using System.Collections.Generic;
 using System.Text.Json;
 
-namespace Meilisearch.Tests
+namespace Meilisearch.Tests;
+
+public class Movie
 {
-    public class Movie
-    {
-        public string Id { get; set; }
+    public string Id { get; set; }
 
-        public string Name { get; set; }
+    public string Name { get; set; }
 
-        public string Genre { get; set; }
-    }
+    public string Genre { get; set; }
+}
 
-    public class MovieInfo
-    {
-        public string Comment { get; set; }
+public class MovieInfo
+{
+    public string Comment { get; set; }
 
-        public int ReviewNb { get; set; }
-    }
+    public int ReviewNb { get; set; }
+}
 
-    public class MovieWithInfo
-    {
-        public string Id { get; set; }
+public class MovieWithInfo
+{
+    public string Id { get; set; }
 
-        public string Name { get; set; }
+    public string Name { get; set; }
 
-        public MovieInfo Info { get; set; }
-    }
+    public MovieInfo Info { get; set; }
+}
 
 
-    public class MovieWithIntId
-    {
-        public int Id { get; set; }
+public class MovieWithIntId
+{
+    public int Id { get; set; }
 
-        public string Name { get; set; }
+    public string Name { get; set; }
 
-        public string Genre { get; set; }
-    }
+    public string Genre { get; set; }
+}
 
-    public class FormattedMovie
-    {
-        public string Id { get; set; }
+public class FormattedMovie
+{
+    public string Id { get; set; }
 
-        public string Name { get; set; }
+    public string Name { get; set; }
 
-        public string Genre { get; set; }
+    public string Genre { get; set; }
 
 #pragma warning disable SA1300
-        public Movie _Formatted { get; set; }
-    }
+    public Movie _Formatted { get; set; }
+}
 
-    public class MovieWithRankingScore
-    {
-        public string Id { get; set; }
+public class MovieWithRankingScore
+{
+    public string Id { get; set; }
 
-        public string Name { get; set; }
+    public string Name { get; set; }
 
-        public string Genre { get; set; }
-        public double? _RankingScore { get; set; }
-    }
+    public string Genre { get; set; }
+    public double? _RankingScore { get; set; }
+}
 
-    public class MovieWithRankingScoreDetails
-    {
-        public string Id { get; set; }
+public class MovieWithRankingScoreDetails
+{
+    public string Id { get; set; }
 
-        public string Name { get; set; }
+    public string Name { get; set; }
 
-        public string Genre { get; set; }
-        public IDictionary<string, JsonElement> _RankingScoreDetails { get; set; }
-    }
+    public string Genre { get; set; }
+    public IDictionary<string, JsonElement> _RankingScoreDetails { get; set; }
 }

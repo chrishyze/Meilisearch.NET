@@ -1,16 +1,15 @@
 using System.Text.Json.Serialization;
 
-namespace Meilisearch.Client
+namespace Meilisearch.Client;
+
+/// <summary>
+/// Deserialized response of the Meilisearch health.
+/// </summary>
+public class MeiliSearchHealth
 {
     /// <summary>
-    /// Deserialized response of the Meilisearch health.
+    /// Gets or sets health of Meilisearch server.
     /// </summary>
-    public class MeiliSearchHealth
-    {
-        /// <summary>
-        /// Gets or sets health of Meilisearch server.
-        /// </summary>
-        [JsonPropertyName("status")]
-        public string Status { get; set; }
-    }
+    [JsonPropertyName("status")]
+    public string Status { get; set; }
 }
