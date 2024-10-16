@@ -57,7 +57,7 @@ public abstract class MeilisearchClientTests<TFixture> : IAsyncLifetime where TF
         await _defaultClient.Index(indexUid).WaitForTaskAsync(task.TaskUid);
 
         var index = _defaultClient.Index(indexUid);
-        task = await index.AddDocumentsAsync(new[] { new Movie { Id = "1", Name = "Batman" } });
+        task = await index.AddDocumentsAsync([new Movie { Id = "1", Name = "Batman" }]);
         task.TaskUid.Should().BeGreaterOrEqualTo(0);
         await index.WaitForTaskAsync(task.TaskUid);
 
@@ -97,10 +97,10 @@ public abstract class MeilisearchClientTests<TFixture> : IAsyncLifetime where TF
     public async Task CancelTasks()
     {
         var date = DateTime.Now;
-        var formattedDate = Uri.EscapeDataString(((DateTime)date).ToString("yyyy-MM-dd'T'HH:mm:ss.fffzzz"));
+        var formattedDate = Uri.EscapeDataString(date.ToString("yyyy-MM-dd'T'HH:mm:ss.fffzzz"));
         var response = await _defaultClient.CancelTasksAsync(new CancelTasksQuery
         {
-            Uids = new List<int> { 1, 4 },
+            Uids = [1, 4],
             AfterStartedAt = date
         });
         var task = await _defaultClient.WaitForTaskAsync(response.TaskUid);
@@ -115,10 +115,10 @@ public abstract class MeilisearchClientTests<TFixture> : IAsyncLifetime where TF
     public async Task DeleteTasks()
     {
         var date = DateTime.Now;
-        var formattedDate = Uri.EscapeDataString(((DateTime)date).ToString("yyyy-MM-dd'T'HH:mm:ss.fffzzz"));
+        var formattedDate = Uri.EscapeDataString(date.ToString("yyyy-MM-dd'T'HH:mm:ss.fffzzz"));
         var response = await _defaultClient.DeleteTasksAsync(new DeleteTasksQuery
         {
-            Uids = new List<int> { 1, 4 },
+            Uids = [1, 4],
             AfterStartedAt = date
         });
         var task = await _defaultClient.WaitForTaskAsync(response.TaskUid);
@@ -132,14 +132,14 @@ public abstract class MeilisearchClientTests<TFixture> : IAsyncLifetime where TF
     [Fact]
     public async Task SwapIndexes()
     {
-        var swaps = new List<IndexSwap> { new IndexSwap("indexA", "indexB") };
+        var swaps = new List<IndexSwap> { new("indexA", "indexB") };
         var response = await _defaultClient.SwapIndexesAsync(swaps);
         var task = await _defaultClient.WaitForTaskAsync(response.TaskUid);
 
         response.TaskUid.Should().Be(task.Uid);
         response.Type.Should().Be(TaskInfoType.IndexSwap);
         task.Status.Should().Be(TaskInfoStatus.Failed);
-        Assert.Equal(task.Details["swaps"].ToString(), JsonSerializer.Serialize(swaps).ToString());
+        Assert.Equal(task.Details["swaps"].ToString(), JsonSerializer.Serialize(swaps));
     }
 
 
@@ -195,11 +195,9 @@ public abstract class MeilisearchClientTests<TFixture> : IAsyncLifetime where TF
     [Fact]
     public void Deserialize_UnknownTaskType_ReturnsUnknown()
     {
-        var json = "\"NonExistentTaskType\"";
-        var options = new JsonSerializerOptions
-        {
-            Converters = { new TaskInfoTypeConverter() }
-        };
+        const string json = "\"NonExistentTaskType\"";
+        var options = new JsonSerializerOptions();
+        options.Converters.Add(new TaskInfoTypeConverter());
 
         var result = JsonSerializer.Deserialize<TaskInfoType>(json, options);
 
@@ -209,11 +207,9 @@ public abstract class MeilisearchClientTests<TFixture> : IAsyncLifetime where TF
     [Fact]
     public void Deserialize_KnownTaskType_ReturnsEnumValue()
     {
-        var json = "\"IndexCreation\"";
-        var options = new JsonSerializerOptions
-        {
-            Converters = { new TaskInfoTypeConverter() }
-        };
+        const string json = "\"IndexCreation\"";
+        var options = new JsonSerializerOptions();
+        options.Converters.Add(new TaskInfoTypeConverter());
 
         var result = JsonSerializer.Deserialize<TaskInfoType>(json, options);
 

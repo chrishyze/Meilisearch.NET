@@ -48,7 +48,11 @@ public class MeilisearchClient
     /// <param name="apiKey">API Key to connect to the Meilisearch server. Best practice is to use HttpClient default header rather than this parameter.</param>
     public MeilisearchClient(HttpClient client, string apiKey = default)
     {
-        client.BaseAddress = client.BaseAddress.OriginalString.ToSafeUri();
+        if (client.BaseAddress != null)
+        {
+            client.BaseAddress = client.BaseAddress.OriginalString.ToSafeUri();
+        }
+
         _http = client;
         _http.AddApiKeyToHeader(apiKey);
         _http.AddDefaultUserAgent();
@@ -174,7 +178,7 @@ public class MeilisearchClient
         var uri = query.ToQueryString(uri: "indexes");
         var response = await _http.GetAsync(uri, cancellationToken).ConfigureAwait(false);
 
-        var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var content = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
         return JsonDocument.Parse(content);
     }
 
@@ -226,7 +230,7 @@ public class MeilisearchClient
     {
         var json = await (
                 await Meilisearch.Index.GetRawAsync(_http, uid, cancellationToken).ConfigureAwait(false))
-            .Content.ReadAsStringAsync().ConfigureAwait(false);
+            .Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
         return JsonDocument.Parse(json).RootElement;
     }
 
@@ -507,11 +511,13 @@ public class MeilisearchClient
     /// <returns>Returns a Task instance.</returns>
     private TaskEndpoint TaskEndpoint()
     {
-        if (_taskEndpoint == null)
+        if (_taskEndpoint != null)
         {
-            _taskEndpoint = new TaskEndpoint();
-            _taskEndpoint.WithHttpClient(_http);
+            return _taskEndpoint;
         }
+
+        _taskEndpoint = new TaskEndpoint();
+        _taskEndpoint.WithHttpClient(_http);
 
         return _taskEndpoint;
     }

@@ -85,7 +85,7 @@ internal static class HttpExtensions
 
     private static JsonContent PrepareJsonPayload<T>(T body, JsonSerializerOptions options = null)
     {
-        options = options ?? Constants.JsonSerializerOptionsWriteNulls;
+        options ??= Constants.JsonSerializerOptionsWriteNulls;
         var payload = JsonContent.Create(body, new MediaTypeHeaderValue("application/json"), options);
 
         return payload;

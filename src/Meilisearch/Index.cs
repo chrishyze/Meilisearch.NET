@@ -171,11 +171,13 @@ public partial class Index
     /// <returns>Returns a TaskEndpoint instance.</returns>
     private TaskEndpoint TaskEndpoint()
     {
-        if (_taskEndpoint == null)
+        if (_taskEndpoint != null)
         {
-            _taskEndpoint = new TaskEndpoint();
-            _taskEndpoint.WithHttpClient(_http);
+            return _taskEndpoint;
         }
+
+        _taskEndpoint = new TaskEndpoint();
+        _taskEndpoint.WithHttpClient(_http);
 
         return _taskEndpoint;
     }

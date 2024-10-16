@@ -95,7 +95,7 @@ public abstract class IndexFixture : IAsyncLifetime
         // task settings
         var settings = new Settings
         {
-            FilterableAttributes = new string[] { "genre" },
+            FilterableAttributes = ["genre"],
         };
         task = await index.UpdateSettingsAsync(settings);
 
@@ -140,7 +140,7 @@ public abstract class IndexFixture : IAsyncLifetime
 
         var settings = new Settings
         {
-            FilterableAttributes = new string[] { "product_id" },
+            FilterableAttributes = ["product_id"],
         };
         task = await index.UpdateSettingsAsync(settings);
 

@@ -20,7 +20,7 @@ public partial class Index
         JsonSerializerOptions options = null, CancellationToken cancellationToken = default)
     {
         options ??= Constants.JsonSerializerOptionsRemoveNulls;
-        query ??= new TasksQuery { IndexUids = new List<string> { this.Uid } };
+        query ??= new TasksQuery { IndexUids = [this.Uid] };
 
         return await TaskEndpoint().GetTasksAsync(query, options, cancellationToken).ConfigureAwait(false);
     }

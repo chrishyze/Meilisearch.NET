@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Meilisearch.Tests;
 
@@ -47,6 +48,7 @@ public class FormattedMovie
     public string Genre { get; set; }
 
 #pragma warning disable SA1300
+    [JsonPropertyName("_formatted")]
     public Movie _Formatted { get; set; }
 }
 
@@ -57,6 +59,8 @@ public class MovieWithRankingScore
     public string Name { get; set; }
 
     public string Genre { get; set; }
+
+    [JsonPropertyName("_rankingScore")]
     public double? _RankingScore { get; set; }
 }
 
@@ -67,5 +71,7 @@ public class MovieWithRankingScoreDetails
     public string Name { get; set; }
 
     public string Genre { get; set; }
+
+    [JsonPropertyName("_rankingScoreDetails")]
     public IDictionary<string, JsonElement> _RankingScoreDetails { get; set; }
 }

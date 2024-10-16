@@ -22,7 +22,7 @@ internal static class StringExtensions
         }
 
         var trimmed = uri.Trim();
-        return trimmed.EndsWith("/") ? new Uri(trimmed) : new Uri($"{trimmed}/");
+        return trimmed.EndsWith('/') ? new Uri(trimmed) : new Uri($"{trimmed}/");
     }
 
     /// <summary>
@@ -45,35 +45,34 @@ internal static class StringExtensions
             throw new ArgumentException("chunkSize value must be greater than 0", nameof(chunkSize));
         }
 
-        using (var sr = new StringReader(csvString))
+        using var sr = new StringReader(csvString);
+        // We extract the CSV header on first line
+        var csvHeader = sr.ReadLine();
+
+        var sb = new StringBuilder();
+        // We add the CSV header first on our chunck
+        sb.AppendLine(csvHeader);
+        var lineNumber = 0;
+        while (sr.ReadLine() is { } line)
         {
-            // We extract the CSV header on first line
-            var csvHeader = sr.ReadLine();
+            sb.AppendLine(line);
+            ++lineNumber;
 
-            var sb = new StringBuilder();
-            // We add the CSV header first on our chunck
-            sb.AppendLine(csvHeader);
-            var line = "";
-            var lineNumber = 0;
-            while ((line = sr.ReadLine()) != null)
-            {
-                sb.AppendLine(line);
-                ++lineNumber;
-
-                if (lineNumber % chunkSize == 0)
-                {
-                    // We return our chunk, we clear our string builder and add back on first line the CSV header
-                    yield return sb.ToString();
-                    sb.Clear();
-                    sb.AppendLine(csvHeader);
-                }
-            }
-
-            // After the last line we check if we have something to send
             if (lineNumber % chunkSize != 0)
             {
-                yield return sb.ToString();
+                continue;
             }
+
+            // We return our chunk, we clear our string builder and add back on first line the CSV header
+            yield return sb.ToString();
+            sb.Clear();
+            sb.AppendLine(csvHeader);
+        }
+
+        // After the last line we check if we have something to send
+        if (lineNumber % chunkSize != 0)
+        {
+            yield return sb.ToString();
         }
     }
 
@@ -97,29 +96,28 @@ internal static class StringExtensions
             throw new ArgumentException("chunkSize value must be greater than 0", nameof(chunkSize));
         }
 
-        using (var sr = new StringReader(ndjsonString))
+        using var sr = new StringReader(ndjsonString);
+        var sb = new StringBuilder();
+        var lineNumber = 0;
+        while (sr.ReadLine() is { } line)
         {
-            var sb = new StringBuilder();
-            var line = "";
-            var lineNumber = 0;
-            while ((line = sr.ReadLine()) != null)
-            {
-                sb.AppendLine(line);
-                ++lineNumber;
+            sb.AppendLine(line);
+            ++lineNumber;
 
-                if (lineNumber % chunkSize == 0)
-                {
-                    // We return our chunk, we clear our string builder
-                    yield return sb.ToString();
-                    sb.Clear();
-                }
-            }
-
-            // After the last line we check if we have something to send
             if (lineNumber % chunkSize != 0)
             {
-                yield return sb.ToString();
+                continue;
             }
+
+            // We return our chunk, we clear our string builder
+            yield return sb.ToString();
+            sb.Clear();
+        }
+
+        // After the last line we check if we have something to send
+        if (lineNumber % chunkSize != 0)
+        {
+            yield return sb.ToString();
         }
     }
 }

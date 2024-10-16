@@ -27,35 +27,41 @@ public class ObjectExtensionsTests
     {
         var date = DateTime.Now;
 
-        yield return new object[] {
+        yield return
+        [
             new FakeQuery { FakeString = "+1" },
             "fakeString=%2B1"
-        };
+        ];
 
-        yield return new object[] {
+        yield return
+        [
             new FakeQuery { FakeString = "+1", FakeInteger = 22 },
             "fakeString=%2B1&fakeInteger=22"
-        };
+        ];
 
-        yield return new object[] {
-            new FakeQuery { FakeDate = date, FakeStringList = new List<string> { "hey", "ho" } },
+        yield return
+        [
+            new FakeQuery { FakeDate = date, FakeStringList = ["hey", "ho"] },
             $"fakeDate={Uri.EscapeDataString(date.ToString("yyyy-MM-dd'T'HH:mm:ss.fffzzz"))}&fakeStringList=hey,ho"
-        };
+        ];
 
-        yield return new object[] {
-            new FakeQuery { FakeStatusList = new List<TaskInfoStatus> { TaskInfoStatus.Enqueued, TaskInfoStatus.Succeeded } },
+        yield return
+        [
+            new FakeQuery { FakeStatusList = [TaskInfoStatus.Enqueued, TaskInfoStatus.Succeeded] },
             "fakeStatusList=Enqueued,Succeeded"
-        };
+        ];
 
-        yield return new object[] {
-            new FakeQuery { FakeTypeList = new List<TaskInfoType> { TaskInfoType.IndexCreation, TaskInfoType.DocumentDeletion } },
+        yield return
+        [
+            new FakeQuery { FakeTypeList = [TaskInfoType.IndexCreation, TaskInfoType.DocumentDeletion] },
             "fakeTypeList=IndexCreation,DocumentDeletion"
-        };
+        ];
 
-        yield return new object[] {
-            new FakeQuery { FakeStatusList = new List<TaskInfoStatus> { TaskInfoStatus.Processing }, FakeTypeList = new List<TaskInfoType> { TaskInfoType.SettingsUpdate } },
+        yield return
+        [
+            new FakeQuery { FakeStatusList = [TaskInfoStatus.Processing], FakeTypeList = [TaskInfoType.SettingsUpdate] },
             "fakeStatusList=Processing&fakeTypeList=SettingsUpdate"
-        };
+        ];
     }
 
     [Theory]
@@ -114,29 +120,28 @@ public class ObjectExtensionsTests
     [Fact]
     public void QueryStringReturnsUriForNullObject()
     {
-        var uri = "indexes/myindex/documents";
+        const string uri = "indexes/myindex/documents";
         object o = null;
 
-        var expected = uri;
         var actual = o.ToQueryString(uri: uri);
-        Assert.Equal(expected, actual);
+        Assert.Equal(uri, actual);
     }
 
     [Theory]
     [InlineData(null, null, null)]
     [InlineData(1, null, null)]
     [InlineData(null, 3, null)]
-    [InlineData(null, null, new string[] { "attr" })]
-    [InlineData(null, null, new string[] { "attr", "attr2", "attr3" })]
+    [InlineData(null, null, new[] { "attr" })]
+    [InlineData(null, null, new[] { "attr", "attr2", "attr3" })]
     [InlineData(1, 2, null)]
-    [InlineData(1, null, new string[] { "attr" })]
-    [InlineData(null, 2, new string[] { "attr" })]
-    [InlineData(1, 2, new string[] { "attr" })]
-    [InlineData(1, 2, new string[] { "attr", "attr2", "attr3" })]
+    [InlineData(1, null, new[] { "attr" })]
+    [InlineData(null, 2, new[] { "attr" })]
+    [InlineData(1, 2, new[] { "attr" })]
+    [InlineData(1, 2, new[] { "attr", "attr2", "attr3" })]
     public void QueryStringsWithListAreEqualsForDocumentsQuery(int? offset, int? limit, string[] fields)
     {
         var uri = "indexes/myindex/documents";
-        var dq = new DocumentsQuery { Offset = offset, Limit = limit, Fields = fields != null ? new List<string>(fields) : null };
+        var dq = new DocumentsQuery { Offset = offset, Limit = limit, Fields = fields != null ? [.. fields] : null };
         var actualQuery = dq.ToQueryString(uri: uri);
 
         Assert.NotEmpty(actualQuery);
@@ -151,10 +156,13 @@ public class ObjectExtensionsTests
             Assert.Contains("offset", actualQuery);
             Assert.Contains(dq.Offset.ToString(), actualQuery);
         }
-        if (fields != null)
+
+        if (fields == null)
         {
-            Assert.Contains("fields", actualQuery);
-            Assert.Contains(String.Join(",", dq.Fields), actualQuery);
+            return;
         }
+
+        Assert.Contains("fields", actualQuery);
+        Assert.Contains(String.Join(",", dq.Fields), actualQuery);
     }
 }

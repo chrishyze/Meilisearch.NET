@@ -12,7 +12,7 @@ namespace Meilisearch.Tests;
 public abstract class TenantTokenTests<TFixture> : IAsyncLifetime
     where TFixture : IndexFixture
 {
-    private readonly TenantTokenRules _searchRules = new TenantTokenRules(new string[] { "*" });
+    private readonly TenantTokenRules _searchRules = new(["*"]);
 
     private readonly TFixture _fixture;
     private Index _basicIndex;
@@ -92,30 +92,23 @@ public abstract class TenantTokenTests<TFixture> : IAsyncLifetime
         var keyOptions = new Key
         {
             Description = "Key generate a tenant token",
-            Actions = new KeyAction[] { KeyAction.All },
-            Indexes = new string[] { "*" },
+            Actions = [KeyAction.All],
+            Indexes = ["*"],
             ExpiresAt = null,
         };
         var createdKey = await _client.CreateKeyAsync(keyOptions);
         var admClient = new MeilisearchClient(_fixture.MeilisearchAddress(), createdKey.KeyUid);
         var task = await admClient
             .Index(_indexName)
-            .UpdateFilterableAttributesAsync(new string[] { "tag", "book_id" });
+            .UpdateFilterableAttributesAsync(["tag", "book_id"]);
         await admClient.Index(_indexName).WaitForTaskAsync(task.TaskUid);
 
-        TenantTokenRules tokenRules;
-        if (data is string[] dataStringArray)
+        var tokenRules = data switch
         {
-            tokenRules = new TenantTokenRules(dataStringArray);
-        }
-        else if (data is IReadOnlyDictionary<string, object> dataDictionary)
-        {
-            tokenRules = new TenantTokenRules(dataDictionary);
-        }
-        else
-        {
-            throw new Exception("Invalid data type");
-        }
+            string[] dataStringArray => new TenantTokenRules(dataStringArray),
+            IReadOnlyDictionary<string, object> dataDictionary => new TenantTokenRules(dataDictionary),
+            _ => throw new Exception("Invalid data type")
+        };
 
         var token = admClient.GenerateTenantToken(createdKey.Uid, tokenRules);
         var customClient = new MeilisearchClient(_fixture.MeilisearchAddress(), token);
@@ -129,8 +122,8 @@ public abstract class TenantTokenTests<TFixture> : IAsyncLifetime
         var keyOptions = new Key
         {
             Description = "Key generate a tenant token",
-            Actions = new KeyAction[] { KeyAction.All },
-            Indexes = new string[] { "*" },
+            Actions = [KeyAction.All],
+            Indexes = ["*"],
             ExpiresAt = null,
         };
         var createdKey = await _client.CreateKeyAsync(keyOptions);
@@ -138,7 +131,7 @@ public abstract class TenantTokenTests<TFixture> : IAsyncLifetime
 
         var token = admClient.GenerateTenantToken(
             createdKey.Uid,
-            new TenantTokenRules(new[] { "*" }),
+            new TenantTokenRules(["*"]),
             expiresAt: DateTime.UtcNow.AddSeconds(1)
         );
         var customClient = new MeilisearchClient(_fixture.MeilisearchAddress(), token);
@@ -155,8 +148,8 @@ public abstract class TenantTokenTests<TFixture> : IAsyncLifetime
         var keyOptions = new Key
         {
             Description = "Key generate a tenant token",
-            Actions = new KeyAction[] { KeyAction.All },
-            Indexes = new string[] { "*" },
+            Actions = [KeyAction.All],
+            Indexes = ["*"],
             ExpiresAt = null,
         };
         var createdKey = await _client.CreateKeyAsync(keyOptions);
@@ -164,7 +157,7 @@ public abstract class TenantTokenTests<TFixture> : IAsyncLifetime
 
         var token = admClient.GenerateTenantToken(
             createdKey.Uid,
-            new TenantTokenRules(new[] { "*" }),
+            new TenantTokenRules(["*"]),
             expiresAt: DateTime.UtcNow.AddMinutes(1)
         );
         var customClient = new MeilisearchClient(_fixture.MeilisearchAddress(), token);
@@ -173,14 +166,16 @@ public abstract class TenantTokenTests<TFixture> : IAsyncLifetime
 
     public static TheoryData<object> PossibleSearchRules()
     {
-        IEnumerable<object> SubPossibleSearchRules()
+        return new TheoryData<object>(SubPossibleSearchRules());
+
+        static IEnumerable<object> SubPossibleSearchRules()
         {
             // {'*': {}}
             yield return new Dictionary<string, object>
             {
                 {
                     "*",
-                    new Dictionary<string, object> { }
+                    new Dictionary<string, object>()
                 }
             };
             // {'books': {}}
@@ -188,7 +183,7 @@ public abstract class TenantTokenTests<TFixture> : IAsyncLifetime
             {
                 {
                     "books",
-                    new Dictionary<string, object> { }
+                    new Dictionary<string, object>()
                 }
             };
             // {'*': null}
@@ -196,9 +191,9 @@ public abstract class TenantTokenTests<TFixture> : IAsyncLifetime
             // {'books': null}
             yield return new Dictionary<string, object> { { "books", null } };
             // ['*']
-            yield return new string[] { "*" };
+            yield return new[] { "*" };
             // ['books']
-            yield return new string[] { "books" };
+            yield return new[] { "books" };
             // {'*': {"filter": 'tag = Tale'}}
             yield return new Dictionary<string, object>
             {
@@ -216,6 +211,5 @@ public abstract class TenantTokenTests<TFixture> : IAsyncLifetime
                 }
             };
         }
-        return new TheoryData<object>(SubPossibleSearchRules());
     }
 }

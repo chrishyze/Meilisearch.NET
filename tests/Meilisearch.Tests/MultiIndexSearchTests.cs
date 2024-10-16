@@ -29,28 +29,22 @@ public abstract class MultiIndexSearchTests<TFixture> : IAsyncLifetime
         await _fixture.DeleteAllIndexes(); // Test context cleaned for each [Fact]
         _index1 = await _fixture.SetUpBasicIndex("BasicIndex-MultiSearch-Index1");
         _index2 = await _fixture.SetUpBasicIndex("BasicIndex-MultiSearch-Index2");
-        var t1 = _index1.UpdateFilterableAttributesAsync(new[] { "genre" });
-        var t2 = _index2.UpdateFilterableAttributesAsync(new[] { "genre" });
+        var t1 = _index1.UpdateFilterableAttributesAsync(["genre"]);
+        var t2 = _index2.UpdateFilterableAttributesAsync(["genre"]);
         await Task.WhenAll((await Task.WhenAll(t1, t2)).Select(x => _fixture.DefaultClient.WaitForTaskAsync(x.TaskUid)));
     }
 
     [Fact]
     public async Task BasicSearch()
     {
-        var result = await _fixture.DefaultClient.MultiSearchAsync(new MultiSearchQuery()
+        var result = await _fixture.DefaultClient.MultiSearchAsync(new MultiSearchQuery
         {
-            Queries = new System.Collections.Generic.List<SearchQuery>()
-            {
-                new SearchQuery() { IndexUid = _index1.Uid, Q = "", Filter = "genre = 'SF'" },
-                new SearchQuery() { IndexUid = _index2.Uid, Q = "", Filter = "genre = 'Action'" }
-            }
+            Queries =
+            [
+                new SearchQuery { IndexUid = _index1.Uid, Q = "", Filter = "genre = 'SF'" },
+                new SearchQuery { IndexUid = _index2.Uid, Q = "", Filter = "genre = 'Action'" }
+            ]
         });
-
-
-        Movie GetMovie(IEnumerable<Movie> movies, string id)
-        {
-            return movies.FirstOrDefault(x => x.Id == id);
-        }
 
         var original1 = await _index1.GetDocumentsAsync<Movie>();
         var originalHits1 = original1.Results;
@@ -76,5 +70,11 @@ public abstract class MultiIndexSearchTests<TFixture> : IAsyncLifetime
             var og = GetMovie(originalHits2, x.Id);
             return og.Name == x.Name && og.Genre == x.Genre;
         }).Should().BeTrue();
+        return;
+
+        Movie GetMovie(IEnumerable<Movie> movies, string id)
+        {
+            return movies.FirstOrDefault(x => x.Id == id);
+        }
     }
 }

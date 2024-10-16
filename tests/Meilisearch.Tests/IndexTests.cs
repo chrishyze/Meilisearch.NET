@@ -69,7 +69,7 @@ public abstract class IndexTests<TFixture> : IAsyncLifetime where TFixture : Ind
         index.Uid.Should().Be(indexUid);
         index.PrimaryKey.Should().BeNull();
 
-        var document = await index.AddDocumentsAsync(new[] { new Movie { Id = "1", Name = "Batman" } });
+        var document = await index.AddDocumentsAsync([new Movie { Id = "1", Name = "Batman" }]);
         document.TaskUid.Should().BeGreaterOrEqualTo(0);
     }
 
@@ -151,7 +151,7 @@ public abstract class IndexTests<TFixture> : IAsyncLifetime where TFixture : Ind
         await _fixture.SetUpEmptyIndex(indexUid1, _defaultPrimaryKey);
         await _fixture.SetUpEmptyIndex(indexUid2, _defaultPrimaryKey);
 
-        var indexes = await _client.GetAllRawIndexesAsync(new IndexesQuery() { Limit = 1 });
+        var indexes = await _client.GetAllRawIndexesAsync(new IndexesQuery { Limit = 1 });
         var results = indexes.RootElement.GetProperty("results");
         var limit = indexes.RootElement.GetProperty("limit").GetInt32();
         results.GetArrayLength().Should().BeGreaterThanOrEqualTo(1);
@@ -166,7 +166,7 @@ public abstract class IndexTests<TFixture> : IAsyncLifetime where TFixture : Ind
         await _fixture.SetUpEmptyIndex(indexUid1, _defaultPrimaryKey);
         await _fixture.SetUpEmptyIndex(indexUid2, _defaultPrimaryKey);
 
-        var indexes = await _client.GetAllRawIndexesAsync(new IndexesQuery() { Offset = 1 });
+        var indexes = await _client.GetAllRawIndexesAsync(new IndexesQuery { Offset = 1 });
         var results = indexes.RootElement.GetProperty("results");
         var offset = indexes.RootElement.GetProperty("offset").GetInt32();
         results.GetArrayLength().Should().BeGreaterThanOrEqualTo(1);
@@ -193,7 +193,7 @@ public abstract class IndexTests<TFixture> : IAsyncLifetime where TFixture : Ind
         await _fixture.SetUpEmptyIndex(indexUid1, _defaultPrimaryKey);
         await _fixture.SetUpEmptyIndex(indexUid2, _defaultPrimaryKey);
 
-        var indexes = await _client.GetAllIndexesAsync(new IndexesQuery() { Limit = 1 });
+        var indexes = await _client.GetAllIndexesAsync(new IndexesQuery { Limit = 1 });
         indexes.Results.Count().Should().BeGreaterOrEqualTo(1);
         indexes.Limit.Should().BeGreaterOrEqualTo(1);
     }
@@ -206,7 +206,7 @@ public abstract class IndexTests<TFixture> : IAsyncLifetime where TFixture : Ind
         await _fixture.SetUpEmptyIndex(indexUid1, _defaultPrimaryKey);
         await _fixture.SetUpEmptyIndex(indexUid2, _defaultPrimaryKey);
 
-        var indexes = await _client.GetAllIndexesAsync(new IndexesQuery() { Offset = 1 });
+        var indexes = await _client.GetAllIndexesAsync(new IndexesQuery { Offset = 1 });
         indexes.Results.Count().Should().BeGreaterOrEqualTo(1);
         Assert.Equal(1, indexes.Offset);
     }

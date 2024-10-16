@@ -8,7 +8,7 @@ namespace Meilisearch;
 /// </summary>
 /// <typeparam name="T">Hit type.</typeparam>
 [JsonConverter(typeof(ISearchableJsonConverterFactory))]
-public interface ISearchable<T>
+public interface ISearchable<out T>
 {
     /// <summary>
     /// The uid of the index

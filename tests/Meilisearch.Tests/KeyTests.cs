@@ -102,8 +102,8 @@ public abstract class KeyTests<TFixture> : IAsyncLifetime where TFixture : Index
         {
             Name = "AddDocumentToAllIndexes",
             Description = "Key to add document to all indexes.",
-            Actions = new KeyAction[] { KeyAction.DocumentsAdd },
-            Indexes = new string[] { "*" },
+            Actions = [KeyAction.DocumentsAdd],
+            Indexes = ["*"],
             ExpiresAt = DateTime.Parse("2042-04-02T00:42:42Z"),
         };
         var createdKey = await _client.CreateKeyAsync(keyOptions);
@@ -126,8 +126,8 @@ public abstract class KeyTests<TFixture> : IAsyncLifetime where TFixture : Index
         var keyOptions = new Key
         {
             Description = "Key to add document to all indexes.",
-            Actions = new KeyAction[] { KeyAction.DocumentsAdd },
-            Indexes = new string[] { "*" },
+            Actions = [KeyAction.DocumentsAdd],
+            Indexes = ["*"],
             ExpiresAt = null,
         };
         var createdKey = await _client.CreateKeyAsync(keyOptions);
@@ -147,14 +147,17 @@ public abstract class KeyTests<TFixture> : IAsyncLifetime where TFixture : Index
     public async Task CreateOneKeyWithUid()
     {
         try { await _client.DeleteKeyAsync("9cd7a335-5b9c-4312-be16-7f1fcf7fd250"); }
-        catch { }
+        catch
+        {
+            // ignored
+        }
 
         var keyOptions = new Key
         {
             Uid = "9cd7a335-5b9c-4312-be16-7f1fcf7fd250",
             Description = "Key to add document to all indexes.",
-            Actions = new KeyAction[] { KeyAction.DocumentsAdd },
-            Indexes = new string[] { "*" },
+            Actions = [KeyAction.DocumentsAdd],
+            Indexes = ["*"],
             ExpiresAt = null,
         };
         var createdKey = await _client.CreateKeyAsync(keyOptions);
@@ -176,15 +179,15 @@ public abstract class KeyTests<TFixture> : IAsyncLifetime where TFixture : Index
     {
         var keyOptions = new Key
         {
-            Actions = new KeyAction[] { KeyAction.DocumentsAll },
-            Indexes = new string[] { "*" },
+            Actions = [KeyAction.DocumentsAll],
+            Indexes = ["*"],
             ExpiresAt = null,
         };
         var createdKey = await _client.CreateKeyAsync(keyOptions);
         var createdKeyUid = createdKey.KeyUid;
         var fetchedKey = await _client.GetKeyAsync(createdKeyUid);
 
-        Assert.Equal(fetchedKey.Actions, new KeyAction[] { KeyAction.DocumentsAll });
+        Assert.Equal(fetchedKey.Actions, [KeyAction.DocumentsAll]);
     }
 
     [Fact]
@@ -194,8 +197,8 @@ public abstract class KeyTests<TFixture> : IAsyncLifetime where TFixture : Index
         {
             Description = "Key to add document to all indexes.",
             Name = "key alias",
-            Actions = new KeyAction[] { KeyAction.DocumentsAdd },
-            Indexes = new string[] { "*" },
+            Actions = [KeyAction.DocumentsAdd],
+            Indexes = ["*"],
             ExpiresAt = null,
         };
         var createdKey = await _client.CreateKeyAsync(keyOptions);
@@ -217,8 +220,8 @@ public abstract class KeyTests<TFixture> : IAsyncLifetime where TFixture : Index
         var keyOptions = new Key
         {
             Description = "Key to delete document to all indexes.",
-            Actions = new KeyAction[] { KeyAction.DocumentsAdd },
-            Indexes = new string[] { "*" },
+            Actions = [KeyAction.DocumentsAdd],
+            Indexes = ["*"],
             ExpiresAt = null,
         };
         var createdKey = await _client.CreateKeyAsync(keyOptions);

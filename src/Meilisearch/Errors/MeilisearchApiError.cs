@@ -14,7 +14,8 @@ public class MeilisearchApiError : Exception
     /// </summary>
     /// <param name="apiError">Specific error message from Meilisearch Api.</param>
     public MeilisearchApiError(MeilisearchApiErrorContent apiError)
-        : base(string.Format("MeilisearchApiError, Message: {0}, Code: {1}, Type: {2}, Link: {3}", apiError.Message, apiError.Code, apiError.Type, apiError.Link))
+        : base(
+            $"MeilisearchApiError, Message: {apiError.Message}, Code: {apiError.Code}, Type: {apiError.Type}, Link: {apiError.Link}")
     {
         Code = apiError.Code;
     }
@@ -26,7 +27,7 @@ public class MeilisearchApiError : Exception
     /// <param name="statusCode">Status code from http response message.</param>
     /// <param name="reasonPhrase">Reason Phrase from http response message.</param>
     public MeilisearchApiError(HttpStatusCode statusCode, string reasonPhrase)
-        : base(string.Format("MeilisearchApiError, Message: {0}, Code: {1}", reasonPhrase, (int)statusCode))
+        : base($"MeilisearchApiError, Message: {reasonPhrase}, Code: {(int)statusCode}")
     {
     }
 

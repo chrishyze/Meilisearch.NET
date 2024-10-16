@@ -12,7 +12,6 @@ namespace Meilisearch;
 /// </summary>
 public class MeilisearchMessageHandler : DelegatingHandler
 {
-
     /// <summary>
     /// Initializes a new instance of the <see cref="MeilisearchMessageHandler"/> class.
     /// Default message handler for Meilisearch API.
@@ -37,23 +36,31 @@ public class MeilisearchMessageHandler : DelegatingHandler
     /// <param name="request">Request.</param>
     /// <param name="cancellationToken">Cancellation Token.</param>
     /// <returns>Return HttpResponseMessage.</returns>
-    protected async override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    protected async override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
+        CancellationToken cancellationToken)
     {
         try
         {
             var response = await base.SendAsync(request, cancellationToken);
-            if (!response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
-                if (response.Content.Headers.ContentLength != 0)
-                {
-                    var content = await response.Content.ReadFromJsonAsync<MeilisearchApiErrorContent>(cancellationToken: cancellationToken).ConfigureAwait(false);
-                    throw new MeilisearchApiError(content);
-                }
+                return response;
+            }
 
+            if (response.StatusCode == System.Net.HttpStatusCode.BadGateway)
+            {
+                throw new HttpRequestException();
+            }
+
+            if (response.Content.Headers.ContentLength == 0)
+            {
                 throw new MeilisearchApiError(response.StatusCode, response.ReasonPhrase);
             }
 
-            return response;
+            var content = await response.Content
+                .ReadFromJsonAsync<MeilisearchApiErrorContent>(cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
+            throw new MeilisearchApiError(content);
         }
         catch (HttpRequestException ex)
         {

@@ -31,8 +31,8 @@ public class VersionTests
     {
         // get the current version defined in the csproj file
         var xmldoc = new XmlDocument();
-        var currentDir = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
-        var path = Path.Combine(currentDir, @"../../../../src/Meilisearch/Meilisearch.csproj");
+        var currentDir = Directory.GetParent(Directory.GetCurrentDirectory())?.FullName;
+        var path = Path.Combine(currentDir, "../../../../src/Meilisearch/Meilisearch.csproj");
         xmldoc.Load(path);
         var mgr = new XmlNamespaceManager(xmldoc.NameTable);
         mgr.AddNamespace("x", "http://schemas.microsoft.com/developer/msbuild/2003");

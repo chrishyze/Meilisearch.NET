@@ -28,15 +28,14 @@ public partial class Index
         JsonSerializerOptions options = null, CancellationToken cancellationToken = default)
     {
         options ??= Constants.JsonSerializerOptionsRemoveNulls;
-        HttpResponseMessage responseMessage;
         var uri = $"indexes/{Uid}/documents";
 
         if (primaryKey != default)
         {
-            uri = $"{uri}?{new { primaryKey = primaryKey }.ToQueryString()}";
+            uri = $"{uri}?{new { primaryKey }.ToQueryString()}";
         }
 
-        responseMessage = await _http
+        var responseMessage = await _http
             .PostJsonCustomAsync(uri, documents, options: options, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
         return await responseMessage.Content
@@ -60,7 +59,7 @@ public partial class Index
 
         if (primaryKey != default)
         {
-            uri = $"{uri}?{new { primaryKey = primaryKey }.ToQueryString()}";
+            uri = $"{uri}?{new { primaryKey }.ToQueryString()}";
         }
 
         var content = new StringContent(documents, Encoding.UTF8, ContentType.Json);
@@ -122,7 +121,7 @@ public partial class Index
 
         if (primaryKey != default)
         {
-            uri = $"{uri}?{new { primaryKey = primaryKey }.ToQueryString()}";
+            uri = $"{uri}?{new { primaryKey }.ToQueryString()}";
         }
 
         var content = new StringContent(documents, Encoding.UTF8, ContentType.Ndjson);
@@ -218,15 +217,14 @@ public partial class Index
         JsonSerializerOptions options = null, CancellationToken cancellationToken = default)
     {
         options ??= Constants.JsonSerializerOptionsRemoveNulls;
-        HttpResponseMessage responseMessage;
         var uri = $"indexes/{Uid}/documents";
 
         if (primaryKey != default)
         {
-            uri = $"{uri}?{new { primaryKey = primaryKey }.ToQueryString()}";
+            uri = $"{uri}?{new { primaryKey }.ToQueryString()}";
         }
 
-        responseMessage = await _http
+        var responseMessage = await _http
             .PutJsonCustomAsync(uri, documents, options, cancellationToken)
             .ConfigureAwait(false);
 
@@ -251,7 +249,7 @@ public partial class Index
 
         if (primaryKey != default)
         {
-            uri = $"{uri}?{new { primaryKey = primaryKey }.ToQueryString()}";
+            uri = $"{uri}?{new { primaryKey }.ToQueryString()}";
         }
 
         var content = new StringContent(documents, Encoding.UTF8, ContentType.Json);
@@ -277,7 +275,7 @@ public partial class Index
 
         if (primaryKey != default)
         {
-            uri = $"{uri}?{new { primaryKey = primaryKey }.ToQueryString()}";
+            uri = $"{uri}?{new { primaryKey }.ToQueryString()}";
         }
 
         var content = new StringContent(documents, Encoding.UTF8, ContentType.Csv);
@@ -303,7 +301,7 @@ public partial class Index
 
         if (primaryKey != default)
         {
-            uri = $"{uri}?{new { primaryKey = primaryKey }.ToQueryString()}";
+            uri = $"{uri}?{new { primaryKey }.ToQueryString()}";
         }
 
         var content = new StringContent(documents, Encoding.UTF8, ContentType.Ndjson);
@@ -418,7 +416,7 @@ public partial class Index
     /// <param name="options">The JSON serialization options.</param>
     /// <param name="cancellationToken">The cancellation token for this call.</param>
     /// <typeparam name="T">Type to return for document.</typeparam>
-    /// <returns>Type if the object is availble.</returns>
+    /// <returns>Type if the object is available.</returns>
     public async Task<T> GetDocumentAsync<T>(int documentId, List<string> fields = default,
         JsonSerializerOptions options = null, CancellationToken cancellationToken = default)
     {
@@ -458,15 +456,13 @@ public partial class Index
                     Constants.VersionErrorHintMessage(e.Message, nameof(GetDocumentsAsync)), e);
             }
         }
-        else
-        {
-            var uri = query.ToQueryString(uri: $"indexes/{Uid}/documents");
 
-            return await _http
-                .GetFromJsonAsync<ResourceResults<IEnumerable<T>>>(uri, options: options,
-                    cancellationToken: cancellationToken)
-                .ConfigureAwait(false);
-        }
+        var requestUri = query.ToQueryString(uri: $"indexes/{Uid}/documents");
+
+        return await _http
+            .GetFromJsonAsync<ResourceResults<IEnumerable<T>>>(requestUri, options: options,
+                cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
     }
 
     /// <summary>
@@ -480,9 +476,9 @@ public partial class Index
         JsonSerializerOptions options = null, CancellationToken cancellationToken = default)
     {
         options ??= Constants.JsonSerializerOptionsRemoveNulls;
-        var httpresponse = await _http.DeleteAsync($"indexes/{Uid}/documents/{documentId}", cancellationToken)
+        var httpResponse = await _http.DeleteAsync($"indexes/{Uid}/documents/{documentId}", cancellationToken)
             .ConfigureAwait(false);
-        return await httpresponse.Content
+        return await httpResponse.Content
             .ReadFromJsonAsync<TaskInfo>(options: options, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
@@ -513,11 +509,11 @@ public partial class Index
         JsonSerializerOptions options = null, CancellationToken cancellationToken = default)
     {
         options ??= Constants.JsonSerializerOptionsRemoveNulls;
-        var httpresponse =
+        var httpResponse =
             await _http.PostAsJsonAsync($"indexes/{Uid}/documents/delete-batch", documentIds,
                     options: options, cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
-        return await httpresponse.Content
+        return await httpResponse.Content
             .ReadFromJsonAsync<TaskInfo>(options: options, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
@@ -536,11 +532,11 @@ public partial class Index
         options ??= Constants.JsonSerializerOptionsRemoveNulls;
         try
         {
-            var httpresponse =
+            var httpResponse =
                 await _http.PostAsJsonAsync($"indexes/{Uid}/documents/delete", query,
                         options: options, cancellationToken: cancellationToken)
                     .ConfigureAwait(false);
-            return await httpresponse.Content
+            return await httpResponse.Content
                 .ReadFromJsonAsync<TaskInfo>(options: options, cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
         }
@@ -576,9 +572,9 @@ public partial class Index
         CancellationToken cancellationToken = default)
     {
         options ??= Constants.JsonSerializerOptionsRemoveNulls;
-        var httpresponse = await _http.DeleteAsync($"indexes/{Uid}/documents", cancellationToken)
+        var httpResponse = await _http.DeleteAsync($"indexes/{Uid}/documents", cancellationToken)
             .ConfigureAwait(false);
-        return await httpresponse.Content
+        return await httpResponse.Content
             .ReadFromJsonAsync<TaskInfo>(options: options, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
@@ -593,7 +589,7 @@ public partial class Index
     /// <typeparam name="T">Type parameter to return.</typeparam>
     /// <returns>Returns Enumerable of items.</returns>
     public async Task<ISearchable<T>> SearchAsync<T>(string query,
-        SearchQuery searchAttributes = default(SearchQuery), JsonSerializerOptions options = null,
+        SearchQuery searchAttributes = default, JsonSerializerOptions options = null,
         CancellationToken cancellationToken = default)
     {
         options ??= Constants.JsonSerializerOptionsRemoveNulls;

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,11 +31,11 @@ public abstract class DocumentTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task BasicDocumentsAddition()
     {
-        var indexUID = "BasicDocumentsAdditionTest";
-        var index = _client.Index(indexUID);
+        const string indexUid = "BasicDocumentsAdditionTest";
+        var index = _client.Index(indexUid);
 
         // Add the documents
-        var task = await index.AddDocumentsAsync(new[] { new Movie { Id = "1", Name = "Batman" } });
+        var task = await index.AddDocumentsAsync([new Movie { Id = "1", Name = "Batman" }]);
         task.TaskUid.Should().BeGreaterOrEqualTo(0);
         await index.WaitForTaskAsync(task.TaskUid);
 
@@ -50,8 +49,8 @@ public abstract class DocumentTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task BasicDocumentAdditionFromJsonString()
     {
-        var indexUID = nameof(BasicDocumentAdditionFromJsonString);
-        var index = _client.Index(indexUID);
+        const string indexUid = nameof(BasicDocumentAdditionFromJsonString);
+        var index = _client.Index(indexUid);
 
         var jsonDocuments = await File.ReadAllTextAsync(Datasets.SmallMoviesJsonPath);
         var task = await index.AddDocumentsJsonAsync(jsonDocuments);
@@ -70,8 +69,8 @@ public abstract class DocumentTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task BasicDocumentAdditionFromCsvString()
     {
-        var indexUID = nameof(BasicDocumentAdditionFromCsvString);
-        var index = _client.Index(indexUID);
+        const string indexUid = nameof(BasicDocumentAdditionFromCsvString);
+        var index = _client.Index(indexUid);
 
         var csvDocuments = await File.ReadAllTextAsync(Datasets.SongsCsvPath);
         var task = await index.AddDocumentsCsvAsync(csvDocuments);
@@ -90,8 +89,8 @@ public abstract class DocumentTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task BasicDocumentAdditionFromCsvWithDelimiter()
     {
-        var indexUID = nameof(BasicDocumentAdditionFromCsvWithDelimiter);
-        var index = _client.Index(indexUID);
+        const string indexUid = nameof(BasicDocumentAdditionFromCsvWithDelimiter);
+        var index = _client.Index(indexUid);
 
         var csvDocuments = await File.ReadAllTextAsync(Datasets.SongsCsvCustomDelimiterPath);
         var task = await index.AddDocumentsCsvAsync(csvDocuments, csvDelimiter: ';');
@@ -110,8 +109,8 @@ public abstract class DocumentTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task BasicDocumentAdditionFromNdjsonString()
     {
-        var indexUID = nameof(BasicDocumentAdditionFromNdjsonString);
-        var index = _client.Index(indexUID);
+        const string indexUid = nameof(BasicDocumentAdditionFromNdjsonString);
+        var index = _client.Index(indexUid);
 
         var ndjsonDocuments = await File.ReadAllTextAsync(Datasets.SongsNdjsonPath);
         var task = await index.AddDocumentsNdjsonAsync(ndjsonDocuments);
@@ -130,16 +129,18 @@ public abstract class DocumentTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task BasicDocumentsAdditionInBatches()
     {
-        var indexUID = "BasicDocumentsAdditionInBatchesTest";
-        var index = _client.Index(indexUID);
+        const string indexUid = "BasicDocumentsAdditionInBatchesTest";
+        var index = _client.Index(indexUid);
 
         // Add the documents
         Movie[] movies =
-        {
-            new Movie { Id = "1", Name = "Batman" }, new Movie { Id = "2", Name = "Reservoir Dogs" },
-            new Movie { Id = "3", Name = "Taxi Driver" }, new Movie { Id = "4", Name = "Interstellar" },
-            new Movie { Id = "5", Name = "Titanic" },
-        };
+        [
+            new() { Id = "1", Name = "Batman" },
+            new() { Id = "2", Name = "Reservoir Dogs" },
+            new() { Id = "3", Name = "Taxi Driver" },
+            new() { Id = "4", Name = "Interstellar" },
+            new() { Id = "5", Name = "Titanic" }
+        ];
         var tasks = await index.AddDocumentsInBatchesAsync(movies, 2);
         foreach (var u in tasks)
         {
@@ -158,12 +159,12 @@ public abstract class DocumentTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task BasicDocumentAdditionFromCsvStringInBatches()
     {
-        var indexUID = nameof(BasicDocumentAdditionFromCsvStringInBatches);
-        var index = _client.Index(indexUID);
+        const string indexUid = nameof(BasicDocumentAdditionFromCsvStringInBatches);
+        var index = _client.Index(indexUid);
 
         var csvDocuments = await File.ReadAllTextAsync(Datasets.SongsCsvPath);
         var tasks = (await index.AddDocumentsCsvInBatchesAsync(csvDocuments, 250)).ToList();
-        Assert.Equal(2, tasks.Count());
+        Assert.Equal(2, tasks.Count);
         foreach (var u in tasks)
         {
             u.TaskUid.Should().BeGreaterOrEqualTo(0);
@@ -186,12 +187,12 @@ public abstract class DocumentTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task BasicDocumentAdditionFromCsvWithDelimiterInBatches()
     {
-        var indexUID = nameof(BasicDocumentAdditionFromCsvWithDelimiterInBatches);
-        var index = _client.Index(indexUID);
+        const string indexUid = nameof(BasicDocumentAdditionFromCsvWithDelimiterInBatches);
+        var index = _client.Index(indexUid);
 
         var csvDocuments = await File.ReadAllTextAsync(Datasets.SongsCsvCustomDelimiterPath);
         var tasks = (await index.AddDocumentsCsvInBatchesAsync(csvDocuments, 15, csvDelimiter: ';')).ToList();
-        Assert.Equal(2, tasks.Count());
+        Assert.Equal(2, tasks.Count);
         foreach (var u in tasks)
         {
             u.TaskUid.Should().BeGreaterOrEqualTo(0);
@@ -214,12 +215,12 @@ public abstract class DocumentTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task BasicDocumentAdditionFromNdjsonStringInBatches()
     {
-        var indexUID = nameof(BasicDocumentAdditionFromNdjsonStringInBatches);
-        var index = _client.Index(indexUID);
+        const string indexUid = nameof(BasicDocumentAdditionFromNdjsonStringInBatches);
+        var index = _client.Index(indexUid);
 
         var ndjsonDocuments = await File.ReadAllTextAsync(Datasets.SongsNdjsonPath);
         var tasks = (await index.AddDocumentsNdjsonInBatchesAsync(ndjsonDocuments, 150)).ToList();
-        Assert.Equal(2, tasks.Count());
+        Assert.Equal(2, tasks.Count);
         foreach (var u in tasks)
         {
             u.TaskUid.Should().BeGreaterOrEqualTo(0);
@@ -242,14 +243,14 @@ public abstract class DocumentTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task BasicDocumentsAdditionWithAlreadyCreatedIndex()
     {
-        var indexUid = "BasicDocumentsAdditionWithAlreadyCreatedIndexTest";
+        const string indexUid = "BasicDocumentsAdditionWithAlreadyCreatedIndexTest";
         var task = await _client.CreateIndexAsync(indexUid);
         task.TaskUid.Should().BeGreaterOrEqualTo(0);
         await _client.Index(indexUid).WaitForTaskAsync(task.TaskUid);
 
         // Add the documents
         var index = _client.Index(indexUid);
-        task = await index.AddDocumentsAsync(new[] { new Movie { Id = "1", Name = "Batman" } });
+        task = await index.AddDocumentsAsync([new Movie { Id = "1", Name = "Batman" }]);
         task.TaskUid.Should().BeGreaterOrEqualTo(0);
         await index.WaitForTaskAsync(task.TaskUid);
 
@@ -263,34 +264,34 @@ public abstract class DocumentTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task BasicDocumentsAdditionWithTimeoutError()
     {
-        var indexUID = "BasicDocumentsAdditionWithTimeoutError";
-        var index = _client.Index(indexUID);
+        const string indexUid = "BasicDocumentsAdditionWithTimeoutError";
+        var index = _client.Index(indexUid);
 
         // Add the documents
-        var task = await index.AddDocumentsAsync(new[] { new Movie { Id = "1", Name = "Batman" } });
+        var task = await index.AddDocumentsAsync([new Movie { Id = "1", Name = "Batman" }]);
         await Assert.ThrowsAsync<MeilisearchTimeoutError>(() => index.WaitForTaskAsync(task.TaskUid, 0));
     }
 
     [Fact]
     public async Task BasicDocumentsAdditionWithTimeoutErrorByInterval()
     {
-        var indexUID = "BasicDocumentsAdditionWithTimeoutErrorByIntervalTest";
-        var index = _client.Index(indexUID);
+        const string indexUid = "BasicDocumentsAdditionWithTimeoutErrorByIntervalTest";
+        var index = _client.Index(indexUid);
 
         // Add the documents
-        var task = await index.AddDocumentsAsync(new[] { new Movie { Id = "1", Name = "Batman" } });
+        var task = await index.AddDocumentsAsync([new Movie { Id = "1", Name = "Batman" }]);
         await Assert.ThrowsAsync<MeilisearchTimeoutError>(() => index.WaitForTaskAsync(task.TaskUid, 0, 10));
     }
 
     [Fact]
     public async Task DocumentsAdditionWithPrimaryKey()
     {
-        var indexUid = "DocumentsAdditionWithPrimaryKeyTest";
+        const string indexUid = "DocumentsAdditionWithPrimaryKeyTest";
         var index = _client.Index(indexUid);
         index.PrimaryKey.Should().BeNull();
 
         // Add the documents
-        var task = await index.AddDocumentsAsync(new[] { new { Key = "1", Name = "Ironman" } }, "key");
+        var task = await index.AddDocumentsAsync([new { Key = "1", Name = "Ironman" }], "key");
         await index.WaitForTaskAsync(task.TaskUid);
         task.TaskUid.Should().BeGreaterOrEqualTo(0);
 
@@ -302,20 +303,19 @@ public abstract class DocumentTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task BasicDocumentsUpdate()
     {
-        var indexUID = "BasicDocumentsUpdateTest";
-        var index = _client.Index(indexUID);
+        const string indexUid = "BasicDocumentsUpdateTest";
+        var index = _client.Index(indexUid);
 
         // Add the documents
-        var task = await index.AddDocumentsAsync(new[]
-        {
+        var task = await index.AddDocumentsAsync([
             new Movie { Id = "1", Name = "Batman", Genre = "Action" },
-            new Movie { Id = "2", Name = "Superman" },
-        });
+            new Movie { Id = "2", Name = "Superman" }
+        ]);
         task.TaskUid.Should().BeGreaterOrEqualTo(0);
         await index.WaitForTaskAsync(task.TaskUid);
 
         // Update the documents
-        task = await index.UpdateDocumentsAsync(new[] { new Movie { Id = "1", Name = "Ironman" } });
+        task = await index.UpdateDocumentsAsync([new Movie { Id = "1", Name = "Ironman" }]);
         task.TaskUid.Should().BeGreaterOrEqualTo(0);
         await index.WaitForTaskAsync(task.TaskUid);
 
@@ -332,14 +332,13 @@ public abstract class DocumentTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task BasicDocumentsUpdateFromJsonString()
     {
-        var indexUID = nameof(BasicDocumentsUpdateFromJsonString);
-        var index = _client.Index(indexUID);
+        const string indexUid = nameof(BasicDocumentsUpdateFromJsonString);
+        var index = _client.Index(indexUid);
 
         // Add the documents
-        var task = await index.AddDocumentsAsync(new[]
-        {
-            new DatasetSmallMovie { Id = "287947", Title = "NOT A TITLE", Genre = "NO GENRE" },
-        });
+        var task = await index.AddDocumentsAsync([
+            new DatasetSmallMovie { Id = "287947", Title = "NOT A TITLE", Genre = "NO GENRE" }
+        ]);
         task.TaskUid.Should().BeGreaterOrEqualTo(0);
         await index.WaitForTaskAsync(task.TaskUid);
 
@@ -359,14 +358,13 @@ public abstract class DocumentTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task BasicDocumentsUpdateFromCsvString()
     {
-        var indexUID = nameof(BasicDocumentsUpdateFromCsvString);
-        var index = _client.Index(indexUID);
+        const string indexUid = nameof(BasicDocumentsUpdateFromCsvString);
+        var index = _client.Index(indexUid);
 
         // Add the documents
-        var task = await index.AddDocumentsAsync(new[]
-        {
-            new DatasetSong { Id = "702481615", Title = "NOT A TITLE", Genre = "NO GENRE" },
-        });
+        var task = await index.AddDocumentsAsync([
+            new DatasetSong { Id = "702481615", Title = "NOT A TITLE", Genre = "NO GENRE" }
+        ]);
         task.TaskUid.Should().BeGreaterOrEqualTo(0);
         await index.WaitForTaskAsync(task.TaskUid);
 
@@ -386,14 +384,13 @@ public abstract class DocumentTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task BasicDocumentsUpdateFromNdjsonString()
     {
-        var indexUID = nameof(BasicDocumentsUpdateFromNdjsonString);
-        var index = _client.Index(indexUID);
+        const string indexUid = nameof(BasicDocumentsUpdateFromNdjsonString);
+        var index = _client.Index(indexUid);
 
         // Add the documents
-        var task = await index.AddDocumentsAsync(new[]
-        {
-            new DatasetSong { Id = "412559401", Title = "NOT A TITLE", Genre = "NO GENRE" },
-        });
+        var task = await index.AddDocumentsAsync([
+            new DatasetSong { Id = "412559401", Title = "NOT A TITLE", Genre = "NO GENRE" }
+        ]);
         task.TaskUid.Should().BeGreaterOrEqualTo(0);
         await index.WaitForTaskAsync(task.TaskUid);
 
@@ -413,16 +410,18 @@ public abstract class DocumentTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task BasicDocumentsUpdateInBatches()
     {
-        var indexUID = "BasicDocumentsUpdateInBatchesTest";
-        var index = _client.Index(indexUID);
+        const string indexUid = "BasicDocumentsUpdateInBatchesTest";
+        var index = _client.Index(indexUid);
 
         // Add the documents
         Movie[] movies =
-        {
-            new Movie { Id = "1", Name = "Batman" }, new Movie { Id = "2", Name = "Reservoir Dogs" },
-            new Movie { Id = "3", Name = "Taxi Driver" }, new Movie { Id = "4", Name = "Interstellar" },
-            new Movie { Id = "5", Name = "Titanic" },
-        };
+        [
+            new() { Id = "1", Name = "Batman" },
+            new() { Id = "2", Name = "Reservoir Dogs" },
+            new() { Id = "3", Name = "Taxi Driver" },
+            new() { Id = "4", Name = "Interstellar" },
+            new() { Id = "5", Name = "Titanic" }
+        ];
         var tasks = await index.AddDocumentsInBatchesAsync(movies, 2);
         foreach (var u in tasks)
         {
@@ -430,14 +429,14 @@ public abstract class DocumentTests<TFixture> : IAsyncLifetime where TFixture : 
             await index.WaitForTaskAsync(u.TaskUid);
         }
 
-        movies = new Movie[]
-        {
+        movies =
+        [
             new Movie { Id = "1", Name = "Batman", Genre = "Action" },
             new Movie { Id = "2", Name = "Reservoir Dogs", Genre = "Drama" },
             new Movie { Id = "3", Name = "Taxi Driver", Genre = "Drama" },
             new Movie { Id = "4", Name = "Interstellar", Genre = "Sci-Fi" },
-            new Movie { Id = "5", Name = "Titanic", Genre = "Drama" },
-        };
+            new Movie { Id = "5", Name = "Titanic", Genre = "Drama" }
+        ];
         tasks = await index.UpdateDocumentsInBatchesAsync(movies, 2);
         foreach (var u in tasks)
         {
@@ -457,20 +456,19 @@ public abstract class DocumentTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task BasicDocumentUpdateFromCsvStringInBatches()
     {
-        var indexUID = nameof(BasicDocumentUpdateFromCsvStringInBatches);
-        var index = _client.Index(indexUID);
+        const string indexUid = nameof(BasicDocumentUpdateFromCsvStringInBatches);
+        var index = _client.Index(indexUid);
 
         // Add the documents
-        var task = await index.AddDocumentsAsync(new[]
-        {
+        var task = await index.AddDocumentsAsync([
             new DatasetSong { Id = "702481615", Title = "NOT A TITLE", Genre = "NO GENRE" },
-            new DatasetSong { Id = "128391318", Title = "NOT A TITLE", Genre = "NO GENRE" },
-        });
+            new DatasetSong { Id = "128391318", Title = "NOT A TITLE", Genre = "NO GENRE" }
+        ]);
         await index.WaitForTaskAsync(task.TaskUid);
 
         var csvDocuments = await File.ReadAllTextAsync(Datasets.SongsCsvPath);
         var tasks = (await index.UpdateDocumentsCsvInBatchesAsync(csvDocuments, 250)).ToList();
-        Assert.Equal(2, tasks.Count());
+        Assert.Equal(2, tasks.Count);
         foreach (var u in tasks)
         {
             u.TaskUid.Should().BeGreaterOrEqualTo(0);
@@ -493,20 +491,19 @@ public abstract class DocumentTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task BasicDocumentUpdateFromNdjsonStringInBatches()
     {
-        var indexUID = nameof(BasicDocumentUpdateFromNdjsonStringInBatches);
-        var index = _client.Index(indexUID);
+        const string indexUid = nameof(BasicDocumentUpdateFromNdjsonStringInBatches);
+        var index = _client.Index(indexUid);
 
         // Add the documents
-        var task = await index.AddDocumentsAsync(new[]
-        {
+        var task = await index.AddDocumentsAsync([
             new DatasetSong { Id = "412559401", Title = "NOT A TITLE", Genre = "NO GENRE" },
-            new DatasetSong { Id = "276177902", Title = "NOT A TITLE", Genre = "NO GENRE" },
-        });
+            new DatasetSong { Id = "276177902", Title = "NOT A TITLE", Genre = "NO GENRE" }
+        ]);
         await index.WaitForTaskAsync(task.TaskUid);
 
         var ndjsonDocuments = await File.ReadAllTextAsync(Datasets.SongsNdjsonPath);
         var tasks = (await index.UpdateDocumentsNdjsonInBatchesAsync(ndjsonDocuments, 150)).ToList();
-        Assert.Equal(2, tasks.Count());
+        Assert.Equal(2, tasks.Count);
         foreach (var u in tasks)
         {
             u.TaskUid.Should().BeGreaterOrEqualTo(0);
@@ -529,12 +526,12 @@ public abstract class DocumentTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task DocumentsUpdateWithPrimaryKey()
     {
-        var indexUid = "DocumentsUpdateWithPrimaryKeyTest";
+        const string indexUid = "DocumentsUpdateWithPrimaryKeyTest";
         var index = _client.Index(indexUid);
         index.PrimaryKey.Should().BeNull();
 
         // Add the documents
-        var task = await index.UpdateDocumentsAsync(new[] { new { Key = "1", Name = "Ironman" } }, "key");
+        var task = await index.UpdateDocumentsAsync([new { Key = "1", Name = "Ironman" }], "key");
         await index.WaitForTaskAsync(task.TaskUid);
         task.TaskUid.Should().BeGreaterOrEqualTo(0);
 
@@ -563,7 +560,7 @@ public abstract class DocumentTests<TFixture> : IAsyncLifetime where TFixture : 
     public async Task GetOneExistingDocumentWithField()
     {
         var index = await _fixture.SetUpBasicIndex("GetOneExistingDocumentWithStringIdTest");
-        var documents = await index.GetDocumentAsync<Movie>("10", new List<string> { "name" });
+        var documents = await index.GetDocumentAsync<Movie>("10", ["name"]);
         documents.Id.Should().BeNull();
         documents.Name.Should().Be("Gladiator");
     }
@@ -572,7 +569,7 @@ public abstract class DocumentTests<TFixture> : IAsyncLifetime where TFixture : 
     public async Task GetOneExistingDocumentWithMultipleFields()
     {
         var index = await _fixture.SetUpBasicIndex("GetOneExistingDocumentWithStringIdTest");
-        var documents = await index.GetDocumentAsync<Movie>("10", new List<string> { "name", "id" });
+        var documents = await index.GetDocumentAsync<Movie>("10", ["name", "id"]);
         documents.Id.Should().Be("10");
         documents.Name.Should().Be("Gladiator");
         documents.Genre.Should().BeNull();
@@ -592,11 +589,11 @@ public abstract class DocumentTests<TFixture> : IAsyncLifetime where TFixture : 
     public async Task GetMultipleExistingDocumentsWithQuery()
     {
         var index = await _fixture.SetUpBasicIndex("GetMultipleExistingDocumentWithQueryTest");
-        var taskUpdate = await index.UpdateFilterableAttributesAsync(new[] { "genre" });
+        var taskUpdate = await index.UpdateFilterableAttributesAsync(["genre"]);
         taskUpdate.TaskUid.Should().BeGreaterOrEqualTo(0);
         await index.WaitForTaskAsync(taskUpdate.TaskUid);
 
-        var documents = await index.GetDocumentsAsync<Movie>(new DocumentsQuery() { Filter = "genre = 'SF'" });
+        var documents = await index.GetDocumentsAsync<Movie>(new DocumentsQuery { Filter = "genre = 'SF'" });
         Assert.Equal(2, documents.Results.Count());
         documents.Results.Should().ContainSingle(x => x.Id == "12");
         documents.Results.Should().ContainSingle(x => x.Id == "13");
@@ -606,7 +603,7 @@ public abstract class DocumentTests<TFixture> : IAsyncLifetime where TFixture : 
     public async Task GetMultipleExistingDocumentsWithLimit()
     {
         var index = await _fixture.SetUpBasicIndex("GetMultipleExistingDocumentWithLimitTest");
-        var documents = await index.GetDocumentsAsync<Movie>(new DocumentsQuery() { Limit = 2 });
+        var documents = await index.GetDocumentsAsync<Movie>(new DocumentsQuery { Limit = 2 });
         Assert.Equal(2, documents.Results.Count());
         documents.Results.First().Id.Should().Be("10");
         documents.Results.Last().Id.Should().Be("11");
@@ -617,11 +614,7 @@ public abstract class DocumentTests<TFixture> : IAsyncLifetime where TFixture : 
     {
         var index = await _fixture.SetUpBasicIndex("GetMultipleExistingDocumentWithLimitTest");
         var documents =
-            await index.GetDocumentsAsync<Movie>(new DocumentsQuery()
-            {
-                Limit = 2,
-                Fields = new List<string> { "id" }
-            });
+            await index.GetDocumentsAsync<Movie>(new DocumentsQuery { Limit = 2, Fields = ["id"] });
         Assert.Equal(2, documents.Results.Count());
         documents.Results.First().Id.Should().Be("10");
         documents.Results.First().Name.Should().BeNull();
@@ -633,11 +626,7 @@ public abstract class DocumentTests<TFixture> : IAsyncLifetime where TFixture : 
     {
         var index = await _fixture.SetUpBasicIndex("GetMultipleExistingDocumentWithLimitTest");
         var documents =
-            await index.GetDocumentsAsync<Movie>(new DocumentsQuery()
-            {
-                Limit = 2,
-                Fields = new List<string> { "id", "name" }
-            });
+            await index.GetDocumentsAsync<Movie>(new DocumentsQuery { Limit = 2, Fields = ["id", "name"] });
         Assert.Equal(2, documents.Results.Count());
         documents.Results.First().Id.Should().Be("10");
         documents.Results.First().Name.Should().Be("Gladiator");
@@ -684,15 +673,14 @@ public abstract class DocumentTests<TFixture> : IAsyncLifetime where TFixture : 
         var index = await _fixture.SetUpBasicIndex("DeleteMultipleDocumentsWithStringIdTest");
 
         // Delete the documents
-        var task = await index.DeleteDocumentsAsync(new[] { "12", "13", "14" });
+        var task = await index.DeleteDocumentsAsync(["12", "13", "14"]);
         task.TaskUid.Should().BeGreaterOrEqualTo(0);
         await index.WaitForTaskAsync(task.TaskUid);
 
         // Check the documents have been deleted
         var docs = await index.GetDocumentsAsync<Movie>();
         Assert.Equal(4, docs.Results.Count());
-        MeilisearchApiError ex;
-        ex = await Assert.ThrowsAsync<MeilisearchApiError>(() => index.GetDocumentAsync<Movie>("12"));
+        var ex = await Assert.ThrowsAsync<MeilisearchApiError>(() => index.GetDocumentAsync<Movie>("12"));
         Assert.Equal("document_not_found", ex.Code);
         ex = await Assert.ThrowsAsync<MeilisearchApiError>(() => index.GetDocumentAsync<Movie>("13"));
         Assert.Equal("document_not_found", ex.Code);
@@ -706,15 +694,14 @@ public abstract class DocumentTests<TFixture> : IAsyncLifetime where TFixture : 
         var index = await _fixture.SetUpBasicIndexWithIntId("DeleteMultipleDocumentsWithIntegerIdTest");
 
         // Delete the documents
-        var task = await index.DeleteDocumentsAsync(new[] { 12, 13, 14 });
+        var task = await index.DeleteDocumentsAsync([12, 13, 14]);
         task.TaskUid.Should().BeGreaterOrEqualTo(0);
         await index.WaitForTaskAsync(task.TaskUid);
 
         // Check the documents have been deleted
         var docs = await index.GetDocumentsAsync<MovieWithIntId>();
         Assert.Equal(4, docs.Results.Count());
-        MeilisearchApiError ex;
-        ex = await Assert.ThrowsAsync<MeilisearchApiError>(() => index.GetDocumentAsync<MovieWithIntId>("12"));
+        var ex = await Assert.ThrowsAsync<MeilisearchApiError>(() => index.GetDocumentAsync<MovieWithIntId>("12"));
         Assert.Equal("document_not_found", ex.Code);
         ex = await Assert.ThrowsAsync<MeilisearchApiError>(() => index.GetDocumentAsync<MovieWithIntId>("13"));
         Assert.Equal("document_not_found", ex.Code);
@@ -726,20 +713,19 @@ public abstract class DocumentTests<TFixture> : IAsyncLifetime where TFixture : 
     public async Task DeleteMultipleDocumentsByFilter()
     {
         var index = await _fixture.SetUpBasicIndex("DeleteMultipleDocumentsByFilterTest");
-        var taskUpdate = await index.UpdateFilterableAttributesAsync(new[] { "genre" });
+        var taskUpdate = await index.UpdateFilterableAttributesAsync(["genre"]);
         taskUpdate.TaskUid.Should().BeGreaterOrEqualTo(0);
         await index.WaitForTaskAsync(taskUpdate.TaskUid);
 
         // Delete the documents
-        var task = await index.DeleteDocumentsAsync(new DeleteDocumentsQuery() { Filter = "genre = SF" });
+        var task = await index.DeleteDocumentsAsync(new DeleteDocumentsQuery { Filter = "genre = SF" });
         task.TaskUid.Should().BeGreaterOrEqualTo(0);
         await index.WaitForTaskAsync(task.TaskUid);
 
         // Check the documents have been deleted
         var docs = await index.GetDocumentsAsync<Movie>();
         Assert.Equal(5, docs.Results.Count());
-        MeilisearchApiError ex;
-        ex = await Assert.ThrowsAsync<MeilisearchApiError>(() => index.GetDocumentAsync<Movie>("12"));
+        var ex = await Assert.ThrowsAsync<MeilisearchApiError>(() => index.GetDocumentAsync<Movie>("12"));
         Assert.Equal("document_not_found", ex.Code);
         ex = await Assert.ThrowsAsync<MeilisearchApiError>(() => index.GetDocumentAsync<Movie>("13"));
         Assert.Equal("document_not_found", ex.Code);

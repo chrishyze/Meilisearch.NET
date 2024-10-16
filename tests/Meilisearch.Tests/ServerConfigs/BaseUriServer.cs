@@ -15,14 +15,12 @@ public class BaseUriServer
         {
             var env = Environment.GetEnvironmentVariable("MEILISEARCH_URL");
 
-            return env == null ? MeilisearchTestAddress : env;
+            return env ?? MeilisearchTestAddress;
         }
     }
 
     [CollectionDefinition(CollectionFixtureName)]
-    public class IndexCollection : ICollectionFixture<ConfigFixture>
-    {
-    }
+    public class IndexCollection : ICollectionFixture<ConfigFixture>;
 
     [Collection(CollectionFixtureName)]
     public class DocumentTests : DocumentTests<ConfigFixture>

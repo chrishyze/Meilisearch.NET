@@ -20,21 +20,19 @@ internal static class EnumerableExtensions
     /// <exception cref="ArgumentException">Throw if chunkSize is lower than 1.</exception>
     internal static IEnumerable<IEnumerable<T>> GetChunks<T>(this IEnumerable<T> fullList, int chunkSize)
     {
-        if (fullList is null)
-        {
-            throw new ArgumentNullException(nameof(fullList));
-        }
+        ArgumentNullException.ThrowIfNull(fullList);
 
         if (chunkSize < 1)
         {
             throw new ArgumentException("chunkSize value must be greater than 0", nameof(chunkSize));
         }
 
-        var total = fullList.Count();
+        var enumerable = fullList.ToList();
+        var total = enumerable.Count;
         var sent = 0;
         while (sent < total)
         {
-            yield return fullList.Skip(sent).Take(chunkSize);
+            yield return enumerable.Skip(sent).Take(chunkSize);
             sent += chunkSize;
         }
     }

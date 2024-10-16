@@ -21,6 +21,6 @@ public class IndexSwap
     /// <param name="indexB">The indexB.</param>
     public IndexSwap(string indexA, string indexB)
     {
-        this.Indexes = new List<string> { indexA, indexB };
+        this.Indexes = [indexA, indexB];
     }
 }

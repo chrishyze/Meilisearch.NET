@@ -103,7 +103,7 @@ public abstract class SearchTests<TFixture> : IAsyncLifetime where TFixture : In
     {
         var newFilters = new Settings
         {
-            FilterableAttributes = new string[] { "name" },
+            FilterableAttributes = ["name"],
         };
         var task = await _basicIndex.UpdateSettingsAsync(newFilters);
         task.TaskUid.Should().BeGreaterOrEqualTo(0);
@@ -111,7 +111,7 @@ public abstract class SearchTests<TFixture> : IAsyncLifetime where TFixture : In
 
         var movies = await _basicIndex.SearchAsync<FormattedMovie>(
             "man",
-            new SearchQuery { AttributesToHighlight = new string[] { "name" } });
+            new SearchQuery { AttributesToHighlight = ["name"] });
         movies.Hits.Should().NotBeEmpty();
         movies.Hits.First().Id.Should().NotBeEmpty();
         movies.Hits.First().Name.Should().NotBeEmpty();
@@ -124,7 +124,7 @@ public abstract class SearchTests<TFixture> : IAsyncLifetime where TFixture : In
     {
         var movies = await _basicIndex.SearchAsync<FormattedMovie>(
             null,
-            new SearchQuery { AttributesToHighlight = new string[] { "name" } });
+            new SearchQuery { AttributesToHighlight = ["name"] });
         movies.Hits.Should().NotBeEmpty();
         movies.Hits.First().Id.Should().NotBeNull();
         movies.Hits.First().Name.Should().NotBeNull();
@@ -137,7 +137,7 @@ public abstract class SearchTests<TFixture> : IAsyncLifetime where TFixture : In
     {
         var movies = await _basicIndex.SearchAsync<FormattedMovie>(
             string.Empty,
-            new SearchQuery { AttributesToHighlight = new string[] { "name" } });
+            new SearchQuery { AttributesToHighlight = ["name"] });
         movies.Hits.Should().NotBeEmpty();
         movies.Hits.First().Id.Should().NotBeNull();
         movies.Hits.First().Name.Should().NotBeNull();
@@ -152,8 +152,8 @@ public abstract class SearchTests<TFixture> : IAsyncLifetime where TFixture : In
             "man",
             new SearchQuery
             {
-                AttributesToHighlight = new string[] { "name" },
-                AttributesToRetrieve = new string[] { "name", "id" },
+                AttributesToHighlight = ["name"],
+                AttributesToRetrieve = ["name", "id"],
                 Offset = 1,
             });
         var firstHit = movies.Hits.First();
@@ -175,7 +175,7 @@ public abstract class SearchTests<TFixture> : IAsyncLifetime where TFixture : In
             "Harry",
             new SearchQuery
             {
-                AttributesToSearchOn = new[] { "name" },
+                AttributesToSearchOn = ["name"],
             });
         var firstHit = movies.Hits.First();
 
@@ -193,7 +193,7 @@ public abstract class SearchTests<TFixture> : IAsyncLifetime where TFixture : In
             "Harry",
             new SearchQuery
             {
-                AttributesToSearchOn = new[] { "genre" },
+                AttributesToSearchOn = ["genre"],
             });
         var firstHit = movies.Hits.FirstOrDefault();
 
@@ -211,7 +211,7 @@ public abstract class SearchTests<TFixture> : IAsyncLifetime where TFixture : In
             });
         movies.Hits.Should().NotBeEmpty();
         movies.FacetDistribution.Should().BeNull();
-        Assert.Equal(2, movies.Hits.Count());
+        Assert.Equal(2, movies.Hits.Count);
         Assert.Equal("12", movies.Hits.First().Id);
         Assert.Equal("Star Wars", movies.Hits.First().Name);
         Assert.Equal("SF", movies.Hits.First().Genre);
@@ -241,11 +241,11 @@ public abstract class SearchTests<TFixture> : IAsyncLifetime where TFixture : In
             null,
             new SearchQuery
             {
-                Filter = new string[] { "genre = SF" },
+                Filter = new[] { "genre = SF" },
             });
         movies.Hits.Should().NotBeEmpty();
         movies.FacetDistribution.Should().BeNull();
-        Assert.Equal(2, movies.Hits.Count());
+        Assert.Equal(2, movies.Hits.Count);
         Assert.Equal("12", movies.Hits.First().Id);
         Assert.Equal("Star Wars", movies.Hits.First().Name);
         Assert.Equal("SF", movies.Hits.First().Genre);
@@ -259,11 +259,11 @@ public abstract class SearchTests<TFixture> : IAsyncLifetime where TFixture : In
             null,
             new SearchQuery
             {
-                Filter = new string[][] { new string[] { "genre = SF", "genre = SF" }, new string[] { "genre = SF" } },
+                Filter = new string[][] { ["genre = SF", "genre = SF"], ["genre = SF"] },
             });
         movies.Hits.Should().NotBeEmpty();
         movies.FacetDistribution.Should().BeNull();
-        Assert.Equal(2, movies.Hits.Count());
+        Assert.Equal(2, movies.Hits.Count);
         Assert.Equal("12", movies.Hits.First().Id);
         Assert.Equal("Star Wars", movies.Hits.First().Name);
         Assert.Equal("SF", movies.Hits.First().Genre);
@@ -275,7 +275,7 @@ public abstract class SearchTests<TFixture> : IAsyncLifetime where TFixture : In
     {
         var newFilters = new Settings
         {
-            FilterableAttributes = new string[] { "id" },
+            FilterableAttributes = ["id"],
         };
         var task = await _indexWithIntId.UpdateSettingsAsync(newFilters);
         task.TaskUid.Should().BeGreaterOrEqualTo(0);
@@ -300,7 +300,7 @@ public abstract class SearchTests<TFixture> : IAsyncLifetime where TFixture : In
     {
         var newFilters = new Settings
         {
-            FilterableAttributes = new string[] { "genre", "id" },
+            FilterableAttributes = ["genre", "id"],
         };
         var task = await _indexWithIntId.UpdateSettingsAsync(newFilters);
         task.TaskUid.Should().BeGreaterOrEqualTo(0);
@@ -339,7 +339,7 @@ public abstract class SearchTests<TFixture> : IAsyncLifetime where TFixture : In
             null,
             new SearchQuery
             {
-                Facets = new string[] { "genre" },
+                Facets = ["genre"],
             });
         movies.Hits.Should().NotBeEmpty();
         movies.FacetDistribution.Should().NotBeEmpty();
@@ -354,7 +354,7 @@ public abstract class SearchTests<TFixture> : IAsyncLifetime where TFixture : In
     {
         var newFilters = new Settings
         {
-            FilterableAttributes = new string[] { "id" },
+            FilterableAttributes = ["id"],
         };
         var task = await _indexWithIntId.UpdateSettingsAsync(newFilters);
         await _indexWithIntId.WaitForTaskAsync(task.TaskUid);
@@ -362,7 +362,7 @@ public abstract class SearchTests<TFixture> : IAsyncLifetime where TFixture : In
             null,
             new SearchQuery
             {
-                Facets = new string[] { "id" },
+                Facets = ["id"],
             });
         movies.Hits.Should().NotBeEmpty();
         movies.FacetDistribution.Should().NotBeEmpty();
@@ -376,7 +376,7 @@ public abstract class SearchTests<TFixture> : IAsyncLifetime where TFixture : In
     {
         var newSortable = new Settings
         {
-            SortableAttributes = new string[] { "name" },
+            SortableAttributes = ["name"],
         };
         var task = await _basicIndex.UpdateSettingsAsync(newSortable);
         task.TaskUid.Should().BeGreaterOrEqualTo(0);
@@ -386,11 +386,11 @@ public abstract class SearchTests<TFixture> : IAsyncLifetime where TFixture : In
             "man",
             new SearchQuery
             {
-                Sort = new string[] { "name:asc" },
+                Sort = ["name:asc"],
             });
         movies.Hits.Should().NotBeEmpty();
         movies.FacetDistribution.Should().BeNull();
-        Assert.Equal(2, movies.Hits.Count());
+        Assert.Equal(2, movies.Hits.Count);
         Assert.Equal("14", movies.Hits.First().Id);
     }
 
@@ -399,7 +399,7 @@ public abstract class SearchTests<TFixture> : IAsyncLifetime where TFixture : In
     {
         var movies = await _basicIndex.SearchAsync<FormattedMovie>(
             "man",
-            new SearchQuery { CropLength = 1, AttributesToCrop = new string[] { "*" } }
+            new SearchQuery { CropLength = 1, AttributesToCrop = ["*"] }
         );
 
         Assert.NotEmpty(movies.Hits);
@@ -411,7 +411,7 @@ public abstract class SearchTests<TFixture> : IAsyncLifetime where TFixture : In
     {
         var movies = await _basicIndex.SearchAsync<FormattedMovie>(
             "man",
-            new SearchQuery { CropLength = 1, AttributesToCrop = new string[] { "*" }, CropMarker = "[…] " }
+            new SearchQuery { CropLength = 1, AttributesToCrop = ["*"], CropMarker = "[…] " }
         );
 
         Assert.NotEmpty(movies.Hits);
@@ -425,7 +425,7 @@ public abstract class SearchTests<TFixture> : IAsyncLifetime where TFixture : In
             "man",
             new SearchQuery
             {
-                AttributesToHighlight = new string[] { "*" },
+                AttributesToHighlight = ["*"],
                 HighlightPreTag = "<mark>",
                 HighlightPostTag = "</mark>"
             }
@@ -449,7 +449,7 @@ public abstract class SearchTests<TFixture> : IAsyncLifetime where TFixture : In
     [Fact]
     public async Task CustomSearchWithinNestedDocumentsWithSearchableAttributesSettings()
     {
-        var task = await _nestedIndex.UpdateSearchableAttributesAsync(new string[] { "name", "info.comment" });
+        var task = await _nestedIndex.UpdateSearchableAttributesAsync(["name", "info.comment"]);
         await _nestedIndex.WaitForTaskAsync(task.TaskUid);
 
         var movies = await _nestedIndex.SearchAsync<MovieWithInfo>("rich");
@@ -463,12 +463,12 @@ public abstract class SearchTests<TFixture> : IAsyncLifetime where TFixture : In
     [Fact]
     public async Task CustomSearchWithinNestedDocumentsWithSearchableAndSortableAttributesSettings()
     {
-        var searchTask = await _nestedIndex.UpdateSearchableAttributesAsync(new string[] { "name", "info.comment" });
+        var searchTask = await _nestedIndex.UpdateSearchableAttributesAsync(["name", "info.comment"]);
         await _nestedIndex.WaitForTaskAsync(searchTask.TaskUid);
-        var sortTask = await _nestedIndex.UpdateSortableAttributesAsync(new string[] { "info.reviewNb" });
+        var sortTask = await _nestedIndex.UpdateSortableAttributesAsync(["info.reviewNb"]);
         await _nestedIndex.WaitForTaskAsync(sortTask.TaskUid);
 
-        var query = new SearchQuery { Sort = new string[] { "info.reviewNb:desc" } };
+        var query = new SearchQuery { Sort = ["info.reviewNb:desc"] };
         var movies = await _nestedIndex.SearchAsync<MovieWithInfo>("", query);
 
         Assert.NotEmpty(movies.Hits);
@@ -478,9 +478,9 @@ public abstract class SearchTests<TFixture> : IAsyncLifetime where TFixture : In
     }
 
     [Fact]
-    public async Task CustomSearchWithMatchingStrategyALL()
+    public async Task CustomSearchWithMatchingStrategyAll()
     {
-        var searchQuery = new SearchQuery() { MatchingStrategy = "all" };
+        var searchQuery = new SearchQuery { MatchingStrategy = "all" };
         var movies = await _nestedIndex.SearchAsync<MovieWithInfo>("movie about rich", searchQuery);
 
         movies.Hits.Should().ContainSingle();
@@ -489,16 +489,16 @@ public abstract class SearchTests<TFixture> : IAsyncLifetime where TFixture : In
     [Fact]
     public async Task CustomSearchWithMatchingStrategyLast()
     {
-        var searchQuery = new SearchQuery() { MatchingStrategy = "last" };
+        var searchQuery = new SearchQuery { MatchingStrategy = "last" };
         var movies = await _nestedIndex.SearchAsync<MovieWithInfo>("movie about rich", searchQuery);
 
-        Assert.True(movies.Hits.Count() > 1);
+        Assert.True(movies.Hits.Count > 1);
     }
 
     [Fact]
     public async Task CustomSearchWithShowRankingScore()
     {
-        var searchQuery = new SearchQuery()
+        var searchQuery = new SearchQuery
         {
             ShowRankingScore = true
         };
@@ -509,7 +509,7 @@ public abstract class SearchTests<TFixture> : IAsyncLifetime where TFixture : In
     [Fact]
     public async Task CustomSearchWithShowRankingScoreDetails()
     {
-        var searchQuery = new SearchQuery()
+        var searchQuery = new SearchQuery
         {
             ShowRankingScoreDetails = true
         };
@@ -520,17 +520,14 @@ public abstract class SearchTests<TFixture> : IAsyncLifetime where TFixture : In
     [Fact]
     public async Task CustomSearchProductsWithoutDistinct()
     {
-        var searchQuery = new SearchQuery()
-        {
-
-        };
+        var searchQuery = new SearchQuery();
         var products = await _productIndexForDistinct.SearchAsync<Product>("", searchQuery);
         products.Hits.Count.Should().Be(14);
     }
     [Fact]
     public async Task CustomSearchProductsWithDistinct()
     {
-        var searchQuery = new SearchQuery()
+        var searchQuery = new SearchQuery
         {
             Distinct = "product_id"
         };

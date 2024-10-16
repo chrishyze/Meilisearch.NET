@@ -19,8 +19,8 @@ internal static class ObjectExtensions
     internal static IDictionary<string, string> AsDictionary(this object source, BindingFlags bindingAttr = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)
     {
         return source.GetType().GetProperties(bindingAttr).Where(p => p.GetValue(source, null) != null).ToDictionary(
-            propInfo => char.ToLowerInvariant(propInfo.Name[0]) + propInfo.Name.Substring(1),
-            propInfo => propInfo.GetValue(source, null).ToString());
+            propInfo => char.ToLowerInvariant(propInfo.Name[0]) + propInfo.Name[1..],
+            propInfo => propInfo.GetValue(source, null)?.ToString());
     }
 
     /// <summary>
@@ -38,40 +38,42 @@ internal static class ObjectExtensions
             foreach (var field in source.GetType().GetProperties(bindingAttr))
             {
                 var value = field.GetValue(source, null);
-                var key = Uri.EscapeDataString(char.ToLowerInvariant(field.Name[0]) + field.Name.Substring(1));
+                var key = Uri.EscapeDataString(char.ToLowerInvariant(field.Name[0]) + field.Name[1..]);
 
-                if (value != null)
+                if (value == null)
                 {
-                    var type = value.GetType();
+                    continue;
+                }
 
-                    if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
+                var type = value.GetType();
+
+                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
+                {
+                    var itemType = type.GetGenericArguments()[0];
+                    if (itemType == typeof(string))
                     {
-                        var itemType = type.GetGenericArguments()[0];
-                        if (itemType == typeof(string))
-                        {
-                            values.Add(key + "=" + string.Join(",", (List<string>)value));
-                        }
-                        else if (itemType == typeof(int))
-                        {
-                            values.Add(key + "=" + string.Join(",", (List<int>)value));
-                        }
-                        else if (itemType == typeof(TaskInfoStatus))
-                        {
-                            values.Add(key + "=" + string.Join(",", ((List<TaskInfoStatus>)value).Select(x => x.ToString())));
-                        }
-                        else if (itemType == typeof(TaskInfoType))
-                        {
-                            values.Add(key + "=" + string.Join(",", ((List<TaskInfoType>)value).Select(x => x.ToString())));
-                        }
+                        values.Add(key + "=" + string.Join(",", (List<string>)value));
                     }
-                    else if (value is DateTime)
+                    else if (itemType == typeof(int))
                     {
-                        values.Add(key + "=" + Uri.EscapeDataString(((DateTime)value).ToString("yyyy-MM-dd'T'HH:mm:ss.fffzzz")));
+                        values.Add(key + "=" + string.Join(",", (List<int>)value));
                     }
-                    else
+                    else if (itemType == typeof(TaskInfoStatus))
                     {
-                        values.Add(key + "=" + Uri.EscapeDataString(value.ToString()));
+                        values.Add(key + "=" + string.Join(",", ((List<TaskInfoStatus>)value).Select(x => x.ToString())));
                     }
+                    else if (itemType == typeof(TaskInfoType))
+                    {
+                        values.Add(key + "=" + string.Join(",", ((List<TaskInfoType>)value).Select(x => x.ToString())));
+                    }
+                }
+                else if (value is DateTime time)
+                {
+                    values.Add(key + "=" + Uri.EscapeDataString(time.ToString("yyyy-MM-dd'T'HH:mm:ss.fffzzz")));
+                }
+                else
+                {
+                    values.Add(key + "=" + Uri.EscapeDataString(value.ToString() ?? string.Empty));
                 }
             }
         }
@@ -82,11 +84,6 @@ internal static class ObjectExtensions
             return queryString;
         }
 
-        if (string.IsNullOrEmpty(queryString))
-        {
-            return uri;
-        }
-
-        return $"{uri}?{queryString}";
+        return string.IsNullOrEmpty(queryString) ? uri : $"{uri}?{queryString}";
     }
 }

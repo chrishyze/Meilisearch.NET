@@ -18,17 +18,15 @@ public class TaskInfoTypeConverter : JsonConverter<TaskInfoType>
     /// <returns></returns>
     public override TaskInfoType Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        if (reader.TokenType == JsonTokenType.String)
+        if (reader.TokenType != JsonTokenType.String)
         {
-            var enumValue = reader.GetString();
-            if (Enum.TryParse<TaskInfoType>(enumValue, true, out var taskInfoType))
-            {
-                return taskInfoType;
-            }
+            return TaskInfoType.Unknown;
         }
 
-        // If we reach here, it means we encountered an unknown value
-        return TaskInfoType.Unknown;
+        var enumValue = reader.GetString();
+        return Enum.TryParse<TaskInfoType>(enumValue, true, out var taskInfoType) ? taskInfoType :
+            // If we reach here, it means we encountered an unknown value
+            TaskInfoType.Unknown;
     }
 
     /// <summary>

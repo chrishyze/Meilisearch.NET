@@ -139,7 +139,7 @@ public class TaskEndpoint
             await Task.Delay(intervalMs, cancellationToken).ConfigureAwait(false);
         }
 
-        throw new MeilisearchTimeoutError("The task " + taskUid.ToString() + " timed out.");
+        throw new MeilisearchTimeoutError("The task " + taskUid + " timed out.");
     }
 
     /// <summary>

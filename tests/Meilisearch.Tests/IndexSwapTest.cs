@@ -12,11 +12,11 @@ public class IndexSwapTests
     {
         var swap = new IndexSwap("indexA", "indexB");
 
-        Assert.Equal(new List<string> { "indexA", "indexB" }, swap.Indexes);
+        Assert.Equal(["indexA", "indexB"], swap.Indexes);
     }
 
     [Fact]
-    public void CreateExpectedJSONFormat()
+    public void CreateExpectedJsonFormat()
     {
         var swap = new IndexSwap("indexA", "indexB");
 

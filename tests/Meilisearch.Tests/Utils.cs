@@ -8,9 +8,7 @@ public static class JsonFileReader
 {
     public static async Task<T> ReadAsync<T>(string filePath)
     {
-        using (var stream = File.OpenRead(filePath))
-        {
-            return await JsonSerializer.DeserializeAsync<T>(stream);
-        }
+        await using var stream = File.OpenRead(filePath);
+        return await JsonSerializer.DeserializeAsync<T>(stream);
     }
 }

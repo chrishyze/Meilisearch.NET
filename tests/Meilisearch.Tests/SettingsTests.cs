@@ -23,30 +23,30 @@ public abstract class SettingsTests<TFixture> : IAsyncLifetime where TFixture : 
 
         _defaultSettings = new Settings
         {
-            RankingRules = new string[]
-            {
+            RankingRules =
+            [
                 "words",
                 "typo",
                 "proximity",
                 "attribute",
                 "sort",
-                "exactness",
-            },
+                "exactness"
+            ],
             DistinctAttribute = null,
-            SearchableAttributes = new string[] { "*" },
-            DisplayedAttributes = new string[] { "*" },
-            StopWords = new string[] { },
-            SeparatorTokens = new List<string> { },
-            NonSeparatorTokens = new List<string> { },
-            Synonyms = new Dictionary<string, IEnumerable<string>> { },
-            FilterableAttributes = new string[] { },
-            SortableAttributes = new string[] { },
+            SearchableAttributes = ["*"],
+            DisplayedAttributes = ["*"],
+            StopWords = [],
+            SeparatorTokens = [],
+            NonSeparatorTokens = [],
+            Synonyms = new Dictionary<string, IEnumerable<string>>(),
+            FilterableAttributes = [],
+            SortableAttributes = [],
             ProximityPrecision = "byWord",
             TypoTolerance = new TypoTolerance
             {
                 Enabled = true,
-                DisableOnAttributes = new string[] { },
-                DisableOnWords = new string[] { },
+                DisableOnAttributes = [],
+                DisableOnWords = [],
                 MinWordSizeForTypos = new TypoTolerance.TypoSize
                 {
                     OneTypo = 5,
@@ -66,7 +66,7 @@ public abstract class SettingsTests<TFixture> : IAsyncLifetime where TFixture : 
 
     private delegate Task<TValue> IndexGetMethod<TValue>(JsonSerializerOptions options = null, CancellationToken cancellationToken = default);
 
-    private delegate Task<TaskInfo> IndexUpdateMethod<TValue>(TValue newValue, JsonSerializerOptions options = null, CancellationToken cancellationToken = default);
+    private delegate Task<TaskInfo> IndexUpdateMethod<in TValue>(TValue newValue, JsonSerializerOptions options = null, CancellationToken cancellationToken = default);
 
     private delegate Task<TaskInfo> IndexResetMethod(JsonSerializerOptions options = null, CancellationToken cancellationToken = default);
 
@@ -89,8 +89,8 @@ public abstract class SettingsTests<TFixture> : IAsyncLifetime where TFixture : 
     {
         var newSettings = new Settings
         {
-            SearchableAttributes = new string[] { "name", "genre" },
-            StopWords = new string[] { "of", "the" },
+            SearchableAttributes = ["name", "genre"],
+            StopWords = ["of", "the"],
             DistinctAttribute = "name",
         };
         await AssertUpdateSuccess(_index.UpdateSettingsAsync, newSettings);
@@ -103,13 +103,13 @@ public abstract class SettingsTests<TFixture> : IAsyncLifetime where TFixture : 
     {
         var newSettingsOne = new Settings
         {
-            SearchableAttributes = new string[] { "name", "genre" },
-            StopWords = new string[] { "of", "the" },
+            SearchableAttributes = ["name", "genre"],
+            StopWords = ["of", "the"],
             DistinctAttribute = "name",
             Synonyms = new Dictionary<string, IEnumerable<string>>
             {
-                { "hp", new string[] { "harry potter" } },
-                { "harry potter", new string[] { "hp" } },
+                { "hp", ["harry potter"] },
+                { "harry potter", ["hp"] },
             },
         };
         await AssertUpdateSuccess(_index.UpdateSettingsAsync, newSettingsOne);
@@ -121,7 +121,7 @@ public abstract class SettingsTests<TFixture> : IAsyncLifetime where TFixture : 
         // Second update: this one should not overwritten StopWords and DistinctAttribute.
         var newSettingsTwo = new Settings
         {
-            SearchableAttributes = new string[] { "name" },
+            SearchableAttributes = ["name"],
         };
         await AssertUpdateSuccess(_index.UpdateSettingsAsync, newSettingsTwo);
 
@@ -135,12 +135,12 @@ public abstract class SettingsTests<TFixture> : IAsyncLifetime where TFixture : 
     {
         var newSettings = new Settings
         {
-            SearchableAttributes = new string[] { "name", "genre" },
-            StopWords = new string[] { "of", "the" },
+            SearchableAttributes = ["name", "genre"],
+            StopWords = ["of", "the"],
             DistinctAttribute = "name",
-            DisplayedAttributes = new string[] { "name" },
-            RankingRules = new string[] { "typo" },
-            FilterableAttributes = new string[] { "genre" }
+            DisplayedAttributes = ["name"],
+            RankingRules = ["typo"],
+            FilterableAttributes = ["genre"]
         };
         await AssertUpdateSuccess(_index.UpdateSettingsAsync, newSettings);
         await AssertGetInequality(_index.GetSettingsAsync, newSettings); // fields omitted in newSettings shouldn't have changed
@@ -159,7 +159,7 @@ public abstract class SettingsTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task UpdateDisplayedAttributes()
     {
-        IEnumerable<string> newDisplayedAttributes = new string[] { "name", "genre" };
+        IEnumerable<string> newDisplayedAttributes = ["name", "genre"];
         await AssertUpdateSuccess(_index.UpdateDisplayedAttributesAsync, newDisplayedAttributes);
         await AssertGetEquality(_index.GetDisplayedAttributesAsync, newDisplayedAttributes);
     }
@@ -167,7 +167,7 @@ public abstract class SettingsTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task ResetDisplayedAttributes()
     {
-        IEnumerable<string> newDisplayedAttributes = new string[] { "name", "genre" };
+        IEnumerable<string> newDisplayedAttributes = ["name", "genre"];
         await AssertUpdateSuccess(_index.UpdateDisplayedAttributesAsync, newDisplayedAttributes);
         await AssertGetEquality(_index.GetDisplayedAttributesAsync, newDisplayedAttributes);
 
@@ -209,7 +209,7 @@ public abstract class SettingsTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task UpdateFilterableAttributes()
     {
-        var newFilterableAttributes = new string[] { "name", "genre" };
+        var newFilterableAttributes = new[] { "name", "genre" };
         await AssertUpdateSuccess(_index.UpdateFilterableAttributesAsync, newFilterableAttributes);
         await AssertGetEquality(_index.GetFilterableAttributesAsync, newFilterableAttributes);
     }
@@ -217,7 +217,7 @@ public abstract class SettingsTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task ResetFilterableAttributes()
     {
-        var newFilterableAttributes = new string[] { "name", "genre" };
+        var newFilterableAttributes = new[] { "name", "genre" };
         await AssertUpdateSuccess(_index.UpdateFilterableAttributesAsync, newFilterableAttributes);
         await AssertGetEquality(_index.GetFilterableAttributesAsync, newFilterableAttributes);
 
@@ -234,7 +234,7 @@ public abstract class SettingsTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task UpdateRankingRules()
     {
-        var newRankingRules = new string[] { "words", "typo" };
+        var newRankingRules = new[] { "words", "typo" };
         await AssertUpdateSuccess(_index.UpdateRankingRulesAsync, newRankingRules);
         await AssertGetEquality(_index.GetRankingRulesAsync, newRankingRules);
     }
@@ -242,7 +242,7 @@ public abstract class SettingsTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task ResetRankingRules()
     {
-        var newRankingRules = new string[] { "words", "typo" };
+        var newRankingRules = new[] { "words", "typo" };
         await AssertUpdateSuccess(_index.UpdateRankingRulesAsync, newRankingRules);
         await AssertGetEquality(_index.GetRankingRulesAsync, newRankingRules);
 
@@ -259,7 +259,7 @@ public abstract class SettingsTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task UpdateSearchableAttributes()
     {
-        var newSearchableAttributes = new string[] { "name", "genre" };
+        var newSearchableAttributes = new[] { "name", "genre" };
         await AssertUpdateSuccess(_index.UpdateSearchableAttributesAsync, newSearchableAttributes);
         await AssertGetEquality(_index.GetSearchableAttributesAsync, newSearchableAttributes);
     }
@@ -267,7 +267,7 @@ public abstract class SettingsTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task ResetSearchableAttributes()
     {
-        var newSearchableAttributes = new string[] { "name", "genre" };
+        var newSearchableAttributes = new[] { "name", "genre" };
         await AssertUpdateSuccess(_index.UpdateSearchableAttributesAsync, newSearchableAttributes);
         await AssertGetEquality(_index.GetSearchableAttributesAsync, newSearchableAttributes);
 
@@ -284,7 +284,7 @@ public abstract class SettingsTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task UpdateSortableAttributes()
     {
-        var newSortableAttributes = new string[] { "name", "genre" };
+        var newSortableAttributes = new[] { "name", "genre" };
         await AssertUpdateSuccess(_index.UpdateSortableAttributesAsync, newSortableAttributes);
         await AssertGetEquality(_index.GetSortableAttributesAsync, newSortableAttributes);
     }
@@ -292,7 +292,7 @@ public abstract class SettingsTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task ResetSortableAttributes()
     {
-        var newSortableAttributes = new string[] { "name", "genre" };
+        var newSortableAttributes = new[] { "name", "genre" };
         await AssertUpdateSuccess(_index.UpdateSortableAttributesAsync, newSortableAttributes);
         await AssertGetEquality(_index.GetSortableAttributesAsync, newSortableAttributes);
 
@@ -309,7 +309,7 @@ public abstract class SettingsTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task UpdateStopWords()
     {
-        var newStopWords = new string[] { "the", "and", "of" };
+        var newStopWords = new[] { "the", "and", "of" };
         await AssertUpdateSuccess(_index.UpdateStopWordsAsync, newStopWords);
         await AssertGetEquality(_index.GetStopWordsAsync, newStopWords);
     }
@@ -317,7 +317,7 @@ public abstract class SettingsTests<TFixture> : IAsyncLifetime where TFixture : 
     [Fact]
     public async Task ResetStopWords()
     {
-        var newStopWords = new string[] { "the", "and", "of" };
+        var newStopWords = new[] { "the", "and", "of" };
         await AssertUpdateSuccess(_index.UpdateStopWordsAsync, newStopWords);
         await AssertGetEquality(_index.GetStopWordsAsync, newStopWords);
 
@@ -386,8 +386,8 @@ public abstract class SettingsTests<TFixture> : IAsyncLifetime where TFixture : 
     {
         var newSynonyms = new Dictionary<string, IEnumerable<string>>
         {
-            { "hp", new string[] { "harry potter" } },
-            { "harry potter", new string[] { "hp" } },
+            { "hp", ["harry potter"] },
+            { "harry potter", ["hp"] },
         };
         await AssertUpdateSuccess(_index.UpdateSynonymsAsync, newSynonyms);
         await AssertGetEquality(_index.GetSynonymsAsync, newSynonyms);
@@ -398,8 +398,8 @@ public abstract class SettingsTests<TFixture> : IAsyncLifetime where TFixture : 
     {
         var newSynonyms = new Dictionary<string, IEnumerable<string>>
         {
-            { "hp", new string[] { "harry potter" } },
-            { "harry potter", new string[] { "hp" } },
+            { "hp", ["harry potter"] },
+            { "harry potter", ["hp"] },
         };
         await AssertUpdateSuccess(_index.UpdateSynonymsAsync, newSynonyms);
         await AssertGetEquality(_index.GetSynonymsAsync, newSynonyms);
@@ -419,7 +419,7 @@ public abstract class SettingsTests<TFixture> : IAsyncLifetime where TFixture : 
     {
         var newTypoTolerance = new TypoTolerance
         {
-            DisableOnWords = new string[] { "harry", "potter" },
+            DisableOnWords = ["harry", "potter"],
             MinWordSizeForTypos = new TypoTolerance.TypoSize
             {
                 TwoTypos = 12
@@ -429,8 +429,8 @@ public abstract class SettingsTests<TFixture> : IAsyncLifetime where TFixture : 
         var returnedTypoTolerance = new TypoTolerance
         {
             Enabled = true,
-            DisableOnAttributes = new string[] { },
-            DisableOnWords = new string[] { "harry", "potter" },
+            DisableOnAttributes = [],
+            DisableOnWords = ["harry", "potter"],
             MinWordSizeForTypos = new TypoTolerance.TypoSize
             {
                 TwoTypos = 12,
@@ -447,19 +447,19 @@ public abstract class SettingsTests<TFixture> : IAsyncLifetime where TFixture : 
     {
         var newTypoTolerance = new TypoTolerance
         {
-            DisableOnWords = new string[] { "harry", "potter" },
+            DisableOnWords = ["harry", "potter"],
         };
 
         var otherUpdateTypoTolerance = new TypoTolerance
         {
-            DisableOnAttributes = new string[] { "title" },
+            DisableOnAttributes = ["title"],
         };
 
         var returnedTypoTolerance = new TypoTolerance
         {
             Enabled = true,
-            DisableOnAttributes = new string[] { "title" },
-            DisableOnWords = new string[] { "harry", "potter" },
+            DisableOnAttributes = ["title"],
+            DisableOnWords = ["harry", "potter"],
             MinWordSizeForTypos = new TypoTolerance.TypoSize
             {
                 TwoTypos = 9,
@@ -477,7 +477,7 @@ public abstract class SettingsTests<TFixture> : IAsyncLifetime where TFixture : 
     {
         var newTypoTolerance = new TypoTolerance
         {
-            DisableOnWords = new string[] { "harry", "potter" },
+            DisableOnWords = ["harry", "potter"],
             MinWordSizeForTypos = new TypoTolerance.TypoSize
             {
                 TwoTypos = 12
@@ -487,8 +487,8 @@ public abstract class SettingsTests<TFixture> : IAsyncLifetime where TFixture : 
         var returnedTypoTolerance = new TypoTolerance
         {
             Enabled = true,
-            DisableOnAttributes = new string[] { },
-            DisableOnWords = new string[] { "harry", "potter" },
+            DisableOnAttributes = [],
+            DisableOnWords = ["harry", "potter"],
             MinWordSizeForTypos = new TypoTolerance.TypoSize
             {
                 TwoTypos = 12,
