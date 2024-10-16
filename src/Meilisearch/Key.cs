@@ -72,6 +72,9 @@ public class Key
     public DateTime? UpdatedAt { get; set; }
 }
 
+/// <summary>
+/// API actions.
+/// </summary>
 [JsonConverter(typeof(KeyActionJsonConverter))]
 public enum KeyAction
 {

@@ -32,6 +32,9 @@ public class TypoTolerance
     [JsonPropertyName("minWordSizeForTypos")]
     public TypoSize MinWordSizeForTypos { get; set; }
 
+    /// <summary>
+    /// Typo size.
+    /// </summary>
     public class TypoSize
     {
         /// <summary>

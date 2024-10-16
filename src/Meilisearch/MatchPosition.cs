@@ -2,8 +2,16 @@ using System.Text.Json.Serialization;
 
 namespace Meilisearch;
 
+/// <summary>
+/// The location of each occurrence of queried terms across all fields.
+/// </summary>
 public class MatchPosition
 {
+    /// <summary>
+    /// See <see cref="MatchPosition" />.
+    /// </summary>
+    /// <param name="start">The start of the matching term.</param>
+    /// <param name="length">The length of the matching term.</param>
     public MatchPosition(int start, int length)
     {
         Start = start;

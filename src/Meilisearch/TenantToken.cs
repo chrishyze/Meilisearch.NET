@@ -10,6 +10,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Meilisearch;
 
+/// <summary>
+/// Tenant token of Meilisearch.
+/// </summary>
 public class TenantToken
 {
     /// <summary>

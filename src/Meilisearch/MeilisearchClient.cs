@@ -22,6 +22,10 @@ public class MeilisearchClient
 {
     private readonly HttpClient _http;
     private TaskEndpoint _taskEndpoint;
+
+    /// <summary>
+    /// The API key of the Meilisearch.
+    /// </summary>
     public string ApiKey { get; }
 
     /// <summary>

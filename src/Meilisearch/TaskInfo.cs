@@ -11,6 +11,19 @@ namespace Meilisearch;
 /// </summary>
 public class TaskInfo
 {
+    /// <summary>
+    /// See <see cref="TaskInfo"/>.
+    /// </summary>
+    /// <param name="taskUid">Unique sequential identifier of the task.</param>
+    /// <param name="indexUid">Unique identifier of the targeted index.</param>
+    /// <param name="status">Status of the task.</param>
+    /// <param name="type">Type of operation performed by the task.</param>
+    /// <param name="details">Detailed information on the task payload. This object's contents depend on the task's type.</param>
+    /// <param name="error">If the task has the failed status, then this object contains the error definition.</param>
+    /// <param name="duration">The total elapsed time the task spent in the processing state.</param>
+    /// <param name="enqueuedAt">The date and time when the task was first enqueued.</param>
+    /// <param name="startedAt">The date and time when the task began processing</param>
+    /// <param name="finishedAt">The date and time when the task finished.</param>
     public TaskInfo(int taskUid, string indexUid, TaskInfoStatus status, TaskInfoType type,
         IReadOnlyDictionary<string, object> details, IReadOnlyDictionary<string, string> error, string duration, DateTime enqueuedAt,
         DateTime? startedAt, DateTime? finishedAt)
@@ -94,29 +107,86 @@ public class TaskInfo
     public int? CanceledBy { get; }
 }
 
+/// <summary>
+/// Status of the task.
+/// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum TaskInfoStatus
 {
+    /// <summary>
+    /// The task is enqueued.
+    /// </summary>
     Enqueued,
+    /// <summary>
+    /// The task is processing.
+    /// </summary>
     Processing,
+    /// <summary>
+    /// The task has completed successfully.
+    /// </summary>
     Succeeded,
+    /// <summary>
+    /// The task is failed.
+    /// </summary>
     Failed,
+    /// <summary>
+    /// The task is canceled.
+    /// </summary>
     Canceled
 }
 
+/// <summary>
+/// Type of operation performed by the task.
+/// </summary>
 [JsonConverter(typeof(TaskInfoTypeConverter))]
 public enum TaskInfoType
 {
+    /// <summary>
+    /// indexCreation tasks.
+    /// </summary>
     IndexCreation,
+    /// <summary>
+    /// indexUpdate tasks.
+    /// </summary>
     IndexUpdate,
+    /// <summary>
+    /// indexDeletion tasks.
+    /// </summary>
     IndexDeletion,
+    /// <summary>
+    /// documentAdditionOrUpdate tasks.
+    /// </summary>
     DocumentAdditionOrUpdate,
+    /// <summary>
+    /// documentDeletion tasks.
+    /// </summary>
     DocumentDeletion,
+    /// <summary>
+    /// settingsUpdate tasks.
+    /// </summary>
     SettingsUpdate,
+    /// <summary>
+    /// dumpCreation task.
+    /// </summary>
     DumpCreation,
+    /// <summary>
+    /// taskCancelation tasks.
+    /// </summary>
     TaskCancelation,
+    /// <summary>
+    /// snapshotCreation tasks.
+    /// </summary>
     SnapshotCreation,
+    /// <summary>
+    /// taskDeletion tasks.
+    /// </summary>
     TaskDeletion,
+    /// <summary>
+    /// indexSwap tasks.
+    /// </summary>
     IndexSwap,
+    /// <summary>
+    /// Unknown tasks.
+    /// </summary>
     Unknown
 }

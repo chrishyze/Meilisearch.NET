@@ -9,6 +9,11 @@ namespace Meilisearch;
 /// <typeparam name="T">Type of the Meilisearch server object. Ex: keys, tasks, ...</typeparam>
 public class Result<T>
 {
+    /// <summary>
+    /// See <see cref="Result{T}"/>.
+    /// </summary>
+    /// <param name="results">Result objects.</param>
+    /// <param name="limit">The limitation number of per-page.</param>
     public Result(T results, int? limit)
     {
         Results = results;

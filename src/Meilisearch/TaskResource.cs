@@ -9,6 +9,19 @@ namespace Meilisearch;
 /// </summary>
 public class TaskResource
 {
+    /// <summary>
+    /// See <see cref="TaskResource" />.
+    /// </summary>
+    /// <param name="uid">Unique sequential identifier of the task.</param>
+    /// <param name="indexUid">Unique identifier of the targeted index.</param>
+    /// <param name="status">Status of the task.</param>
+    /// <param name="type">Type of operation performed by the task.</param>
+    /// <param name="details">Detailed information on the task payload.</param>
+    /// <param name="error">Task failure error.</param>
+    /// <param name="duration">The total elapsed time the task spent in the processing state.</param>
+    /// <param name="enqueuedAt">The date and time when the task was first enqueued.</param>
+    /// <param name="startedAt">The date and time when the task began processing.</param>
+    /// <param name="finishedAt">The date and time when the task finished processing, whether failed, succeeded, or canceled.</param>
     public TaskResource(int uid, string indexUid, TaskInfoStatus status, TaskInfoType type,
         IReadOnlyDictionary<string, object> details, IReadOnlyDictionary<string, string> error, string duration, DateTime enqueuedAt,
         DateTime? startedAt, DateTime? finishedAt)

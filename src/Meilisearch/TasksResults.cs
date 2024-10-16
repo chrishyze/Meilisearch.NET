@@ -7,6 +7,15 @@ namespace Meilisearch;
 /// <typeparam name="T">Type of the Meilisearch server object. Ex: keys, indexes, ...</typeparam>
 public class TasksResults<T> : Result<T>
 {
+    /// <summary>
+    /// See <see cref="TasksResults{T}" />.
+    /// </summary>
+    /// <param name="results">Task objects.</param>
+    /// <param name="limit">Number of tasks returned.</param>
+    /// <param name="from">uid of the first task returned.</param>
+    /// <param name="next">Value passed to from to view the next "page" of results.
+    /// When the value of next is null, there are no more tasks to view.</param>
+    /// <param name="total">Total number of tasks matching the filter or query.</param>
     public TasksResults(T results, int? limit, int? from, int? next, int? total)
         : base(results, limit)
     {

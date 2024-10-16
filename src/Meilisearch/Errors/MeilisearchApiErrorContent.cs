@@ -7,6 +7,13 @@ namespace Meilisearch.Errors;
 /// </summary>
 public class MeilisearchApiErrorContent
 {
+    /// <summary>
+    /// See <see cref="MeilisearchApiErrorContent" />.
+    /// </summary>
+    /// <param name="message">The error message.</param>
+    /// <param name="code">The error code.</param>
+    /// <param name="type">The error type.</param>
+    /// <param name="link">The error link.</param>
     public MeilisearchApiErrorContent(string message, string code, string type, string link)
     {
         Message = message;
