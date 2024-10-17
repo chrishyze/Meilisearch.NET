@@ -184,19 +184,24 @@ public enum KeyAction
 }
 
 
-internal class KeyActionJsonConverter : JsonConverter<KeyAction>
+/// <summary>
+/// JSON converter for <see cref="KeyAction"/>
+/// </summary>
+public class KeyActionJsonConverter : JsonConverter<KeyAction>
 {
+    /// <inheritdoc />
     public override KeyAction Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         return (KeyAction)Enum.Parse(typeof(KeyAction), ConvertFromDotCase(reader.GetString()), false);
     }
 
+    /// <inheritdoc />
     public override void Write(Utf8JsonWriter writer, KeyAction value, JsonSerializerOptions options)
     {
         writer.WriteStringValue(ConvertToDotCase(value));
     }
 
-    private string ConvertFromDotCase(string inputRaw)
+    private static string ConvertFromDotCase(string inputRaw)
     {
         var input = inputRaw.Replace("*", "All");
         var sb = new StringBuilder();
@@ -221,7 +226,7 @@ internal class KeyActionJsonConverter : JsonConverter<KeyAction>
         return sb.ToString();
     }
 
-    private string ConvertToDotCase(KeyAction ka)
+    private static string ConvertToDotCase(KeyAction ka)
     {
         var input = ka.ToString().Replace("All", "*");
         var sb = new StringBuilder();
