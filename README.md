@@ -27,6 +27,64 @@
 
 **Meilisearch** is an open-source search engine. [Learn more about Meilisearch.](https://github.com/meilisearch/meilisearch)
 
+<h2 align="center"> ✨What's new in this fork✨</h2>
+
+This is a fork of the official Meilisearch .NET wrapper with following new features:
+
+- Add support for custom JSON serialization options
+- Ready for the .NET 8.0 and Native AOT
+
+**How to migrate to this package?**
+
+Install the new package [Meilisearch.NET](https://www.nuget.org/packages/Meilisearch.NET) to replace the official one.
+
+1. Customize the JSON serialization options
+
+    I added an optional `JsonSerializerOptions` parameter to all methods those will invoke the JSON serialization/deserialization.
+    So if you want to use the custom JSON serializer options, you can just pass it to the method.
+
+    Before:
+    ```c#
+    var documents = await index.GetDocumentsAsync<Movie>();
+    ```
+
+    After:
+    ```c#
+    var options = new JsonSerializerOptions();
+    options.Converters.Add(new MyCustomConverter());
+
+    var documents = await index.GetDocumentsAsync<Movie>(default, options);
+    ```
+2. Source generation
+
+    ```c#
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
+    using Meilisearch;
+
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(SearchQuery))]
+    [JsonSerializable(typeof(ISearchable<MyCustomDataset>))]
+    [JsonSerializable(typeof(SearchResult<MyCustomDataset>))]
+    [JsonSerializable(typeof(JsonElement))]
+    [JsonSerializable(typeof(MyCustomDataset))]
+    internal partial class SourceGenerationContext : JsonSerializerContext
+    {
+    }
+
+    var options = new JsonSerializerOptions
+    {
+        TypeInfoResolver = SourceGenerationContext.Default
+    };
+
+    // Or using in ASP.NET Core:
+    services.AddControllers().AddJsonOptions(
+        static options =>
+            options.JsonSerializerOptions.TypeInfoResolverChain.Add(SourceGenerationContext.Default));
+    ```
+
+    See also: [How to use source generation in System.Text.Json](https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/source-generation?pivots=dotnet-8-0)
+
 ## Table of Contents <!-- omit in TOC -->
 
 - [📖 Documentation](#-documentation)
@@ -55,18 +113,18 @@ Say goodbye to server deployment and manual updates with [Meilisearch Cloud](htt
 
 ## 🔧 Installation
 
-This package targets .NET Standard 2.1.
+This package targets .NET 8.0.
 
 Using the [.NET Core command-line interface (CLI) tools](https://docs.microsoft.com/en-us/dotnet/core/tools/):
 
 ```bash
-dotnet add package MeiliSearch
+dotnet add package MeiliSearch.NET
 ```
 
 or with the [Package Manager Console](https://docs.microsoft.com/en-us/nuget/tools/package-manager-console):
 
 ```bash
-Install-Package MeiliSearch
+Install-Package MeiliSearch.NET
 ```
 
 ### Run Meilisearch <!-- omit in toc -->
@@ -145,7 +203,7 @@ JSON Output:
     "hits": [
         {
             "id": 6,
-            "title": "Philadelphia",
+            "title": "Philadelphia"
         }
     ],
     "offset": 0,
